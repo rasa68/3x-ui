@@ -119,11 +119,18 @@ func (j *XrayTrafficJob) Run() {
 	// client moves no bytes between polls (the delta heuristic's blind spot),
 	// while a short-lived connection can close before this poll yet still show
 	// in the delta. Older cores fall back to deltas alone.
+	var onlineIPs map[string]map[string]struct{}
 	if onlineUsers, apiMode, ouErr := j.xrayService.GetOnlineUsers(); ouErr != nil {
 		logger.Debug("get online users from xray api failed:", ouErr)
 	} else if apiMode {
 		idleOnline := make([]string, 0, len(onlineUsers))
+		onlineIPs = make(map[string]map[string]struct{}, len(onlineUsers))
 		for _, u := range onlineUsers {
+			ips := make(map[string]struct{}, len(u.IPs))
+			for _, entry := range u.IPs {
+				ips[xray.NormalizeIP(entry.IP)] = struct{}{}
+			}
+			onlineIPs[u.Email] = ips
 			if !deltaActive[u.Email] {
 				activeEmails = append(activeEmails, u.Email)
 				idleOnline = append(idleOnline, u.Email)
@@ -147,7 +154,7 @@ func (j *XrayTrafficJob) Run() {
 		}
 	}
 	j.inboundService.RefreshLocalOnlineClients(activeEmails, activeInboundTags)
-	j.inboundService.RefreshLocalClientInbounds()
+	j.inboundService.RefreshLocalClientInbounds(onlineIPs)
 
 	if !websocket.HasClients() {
 		return
