@@ -2,6 +2,7 @@ package service
 
 import (
 	"io"
+	"net"
 	"os"
 	"strings"
 	"sync"
@@ -21,14 +22,25 @@ const (
 	accessLogPathTTL = 30 * time.Second
 )
 
+// ipFromLogAddress extracts the normalized source IP from a log "from" address
+// such as 1.2.3.4:5678, tcp:1.2.3.4:5678 or [2001:db8::1]:443.
+func ipFromLogAddress(addr string) string {
+	addr = strings.TrimPrefix(strings.TrimPrefix(addr, "tcp:"), "udp:")
+	host, _, err := net.SplitHostPort(addr)
+	if err != nil {
+		host = addr
+	}
+	return xray.NormalizeIP(strings.Trim(host, "[]"))
+}
+
 // parseAccessLogClientInbound reuses the log viewer's parser; ok is false for
 // lines without both an inbound tag and a client email (api calls, anonymous).
-func parseAccessLogClientInbound(line string) (email, tag string, ts time.Time, ok bool) {
+func parseAccessLogClientInbound(line string) (email, tag, ip string, ts time.Time, ok bool) {
 	entry := parseAccessLogFields(line)
 	if entry.Email == "" || entry.Inbound == "" || entry.Inbound == "api" {
-		return "", "", time.Time{}, false
+		return "", "", "", time.Time{}, false
 	}
-	return entry.Email, entry.Inbound, entry.DateTime, true
+	return entry.Email, entry.Inbound, ipFromLogAddress(entry.FromAddress), entry.DateTime, true
 }
 
 // accessLogTailer incrementally reads new Xray access-log lines; it reports
@@ -62,9 +74,9 @@ func (t *accessLogTailer) resolvePath(now time.Time) string {
 	return t.path
 }
 
-// poll returns email -> inbound tags from lines appended since the last call,
-// and whether an access log is configured at all.
-func (t *accessLogTailer) poll() (map[string][]string, bool) {
+// poll returns per-(client, IP, inbound) connection counts from lines appended
+// since the last call, and whether an access log is configured at all.
+func (t *accessLogTailer) poll() ([]xray.ClientInboundObservation, bool) {
 	t.mu.Lock()
 	defer t.mu.Unlock()
 
@@ -120,42 +132,41 @@ func (t *accessLogTailer) poll() (map[string][]string, bool) {
 		lines = lines[1:]
 	}
 
-	out := make(map[string][]string)
-	seen := make(map[string]struct{})
+	counts := make(map[[3]string]int)
 	for _, line := range lines {
-		email, tag, ts, ok := parseAccessLogClientInbound(strings.TrimSpace(line))
+		email, tag, ip, ts, ok := parseAccessLogClientInbound(strings.TrimSpace(line))
 		if !ok {
 			continue
 		}
 		if seeding && !ts.IsZero() && now.Sub(ts) > accessLogSeedWindow {
 			continue
 		}
-		key := email + "\x00" + tag
-		if _, dup := seen[key]; dup {
-			continue
-		}
-		seen[key] = struct{}{}
-		out[email] = append(out[email], tag)
+		counts[[3]string{email, ip, tag}]++
 	}
-	if len(out) == 0 {
+	if len(counts) == 0 {
 		return nil, true
+	}
+	out := make([]xray.ClientInboundObservation, 0, len(counts))
+	for k, n := range counts {
+		out = append(out, xray.ClientInboundObservation{Email: k[0], IP: k[1], Tag: k[2], Count: n})
 	}
 	return out, true
 }
 
-// RefreshLocalClientInbounds folds new access-log pairs into the online view;
-// call it after RefreshLocalOnlineClients. Without an access log it clears the view.
-func (s *InboundService) RefreshLocalClientInbounds() {
+// RefreshLocalClientInbounds folds new access-log lines into the online view;
+// call it after RefreshLocalOnlineClients. onlineIPs is email -> live IPs from
+// the core (may be nil). Without an access log it clears the view.
+func (s *InboundService) RefreshLocalClientInbounds(onlineIPs map[string]map[string]struct{}) {
 	process := currentXrayProcess()
 	if process == nil {
 		return
 	}
-	pairs, enabled := clientInboundTailer.poll()
+	obs, enabled := clientInboundTailer.poll()
 	if !enabled {
 		process.ClearLocalClientInbounds()
 		return
 	}
-	process.RefreshLocalClientInbounds(pairs, time.Now().UnixMilli(), onlineGracePeriodMs)
+	process.RefreshLocalClientInbounds(obs, onlineIPs, time.Now().UnixMilli(), onlineGracePeriodMs)
 }
 
 // GetClientInboundsByGuid returns email -> attributed inbound tags per panelGuid.
