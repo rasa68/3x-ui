@@ -278,7 +278,7 @@ func (s *DiscordService) SendTest(ctx context.Context) error {
 	now := time.Now().UTC().Format(time.RFC3339)
 	hostname, _ := os.Hostname()
 	if hostname == "" {
-		hostname = "3x-ui"
+		hostname = "rasa-XPanel"
 	}
 	embed := Embed{
 		Title:       tr("discord.test.title"),

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
-import { Button, Checkbox, Form, Input, Modal, Select, Tag } from 'antd';
+import { Button, Checkbox, Form, Input, InputNumber, Modal, Select, Tag } from 'antd';
 import { DownloadOutlined, SyncOutlined } from '@ant-design/icons';
 
 import { HttpUtil, FileManager, IntlUtil, PromiseUtil } from '@/utils';
@@ -60,12 +60,17 @@ function shortTime(value?: string | number): string {
 }
 
 const AUTO_UPDATE_INTERVAL = 5000;
+const CUSTOM_ROWS = 'custom';
+const MAX_CUSTOM_ROWS = 1_000_000;
 
 export default function XrayLogModal({ open, onClose }: XrayLogModalProps) {
   const { t } = useTranslation();
   const { datepicker } = useDatepicker();
   const { isMobile } = useMediaQuery();
-  const [rows, setRows] = useState('20');
+  const [rowsChoice, setRowsChoice] = useState('20');
+  const [customDraft, setCustomDraft] = useState<number | null>(2000);
+  const [customRows, setCustomRows] = useState(2000);
+  const rows = rowsChoice === CUSTOM_ROWS ? String(customRows) : rowsChoice;
   const [filter, setFilter] = useState('');
   const [showDirect, setShowDirect] = useState(true);
   const [showBlocked, setShowBlocked] = useState(true);
@@ -122,6 +127,13 @@ export default function XrayLogModal({ open, onClose }: XrayLogModalProps) {
     return () => clearInterval(id);
   }, [open, autoUpdate]);
 
+  // Committed on blur/Enter so typing "5000" doesn't fire a fetch per digit.
+  function commitCustomRows() {
+    const n = Math.min(MAX_CUSTOM_ROWS, Math.max(1, Math.floor(customDraft ?? customRows)));
+    setCustomDraft(n);
+    setCustomRows(n);
+  }
+
   function fullDate(value?: string | number): string {
     return IntlUtil.formatDate(value, datepicker);
   }
@@ -173,19 +185,36 @@ export default function XrayLogModal({ open, onClose }: XrayLogModalProps) {
       <Form layout="inline" className="log-toolbar">
         <Form.Item>
           <Select
-            value={rows}
+            value={rowsChoice}
             size="small"
             style={{ width: 100 }}
-            onChange={setRows}
+            onChange={setRowsChoice}
             options={[
               { value: '20', label: '20' },
               { value: '50', label: '50' },
               { value: '100', label: '100' },
               { value: '500', label: '500' },
               { value: '1000', label: '1000' },
+              { value: CUSTOM_ROWS, label: 'Custom' },
             ]}
           />
         </Form.Item>
+        {rowsChoice === CUSTOM_ROWS && (
+          <Form.Item>
+            <InputNumber
+              value={customDraft}
+              size="small"
+              min={1}
+              max={MAX_CUSTOM_ROWS}
+              precision={0}
+              style={{ width: 110 }}
+              aria-label="Custom log rows"
+              onChange={(v) => setCustomDraft(typeof v === 'number' ? v : null)}
+              onBlur={commitCustomRows}
+              onPressEnter={commitCustomRows}
+            />
+          </Form.Item>
+        )}
         <Form.Item label={t('filter')} className="filter-item">
           <Input
             value={filter}

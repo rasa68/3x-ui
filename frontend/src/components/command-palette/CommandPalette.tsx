@@ -812,7 +812,7 @@ export default function CommandPalette() {
                 {t('close')}
               </span>
             </div>
-            <span>3x-ui Command Palette</span>
+            <span>rasa-XPanel Command Palette</span>
           </div>
         </div>
       </div>
