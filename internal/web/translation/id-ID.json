@@ -153,7 +153,7 @@
       "xrayUpdates": "Pembaruan Xray",
       "xraySwitchClickDesk": "Pilih dengan hati-hati, karena versi yang lebih lama mungkin tidak kompatibel dengan konfigurasi saat ini.",
       "updatePanel": "Perbarui Panel",
-      "panelUpdateDesc": "Ini akan memperbarui 3X-UI ke rilis terbaru dan me-restart layanan panel.",
+      "panelUpdateDesc": "Ini akan memperbarui rasa-XPanel ke rilis terbaru dan me-restart layanan panel.",
       "currentPanelVersion": "Versi panel saat ini",
       "latestPanelVersion": "Versi panel terbaru",
       "panelUpToDate": "Panel sudah terbaru",
@@ -217,7 +217,7 @@
       "xraySwitchVersionDialogDesc": "Ini akan mengubah versi Xray ke #version#.",
       "xraySwitchVersionPopover": "Xray berhasil diperbarui",
       "panelUpdateDialog": "Apakah Anda benar-benar ingin memperbarui panel?",
-      "panelUpdateDialogDesc": "Ini akan memperbarui 3X-UI ke #version# dan me-restart layanan panel.",
+      "panelUpdateDialogDesc": "Ini akan memperbarui rasa-XPanel ke #version# dan me-restart layanan panel.",
       "panelUpdateStartedPopover": "Pembaruan panel dimulai",
       "panelUpdateFailedTitle": "Pembaruan panel gagal",
       "panelUpdateFailedDesc": "Pembaruan tidak selesai dengan sukses. Periksa log server, atau jalankan 'x-ui update' dari baris perintah.",
@@ -2420,12 +2420,12 @@
     },
     "sponsors": {
       "title": "Sponsor",
-      "intro": "Perusahaan yang mendukung pengembangan 3X-UI. Tautan sponsor dibuka di tab baru.",
+      "intro": "Perusahaan yang mendukung pengembangan rasa-XPanel. Tautan sponsor dibuka di tab baru.",
       "become": "Jadi sponsor",
       "tag": "Sponsor",
       "visit": "Kunjungi",
       "yourBrand": "Merek Anda di sini",
-      "yourBrandText": "Tampilkan perusahaan Anda kepada ribuan admin server yang membuka 3X-UI setiap hari."
+      "yourBrandText": "Tampilkan perusahaan Anda kepada ribuan admin server yang membuka rasa-XPanel setiap hari."
     }
   },
   "tgbot": {
@@ -2481,7 +2481,7 @@
       "report": "🕰 Laporan Terjadwal: {{ .RunTime }}\r\n",
       "datetime": "⏰ Tanggal & Waktu: {{ .DateTime }}\r\n",
       "hostname": "💻 Host: {{ .Hostname }}\r\n",
-      "version": "🚀 Versi 3X-UI: {{ .Version }}\r\n",
+      "version": "🚀 Versi rasa-XPanel: {{ .Version }}\r\n",
       "xrayVersion": "📡 Versi Xray: {{ .XrayVersion }}\r\n",
       "ipv6": "🌐 IPv6: {{ .IPv6 }}\r\n",
       "ipv4": "🌐 IPv4: {{ .IPv4 }}\r\n",
@@ -2629,10 +2629,10 @@
   },
   "discord": {
     "test": {
-      "title": "Uji Notifikasi Discord 3x-ui",
+      "title": "Uji Notifikasi Discord rasa-XPanel",
       "body": "Ini adalah notifikasi uji yang memastikan notifikasi Discord telah dikonfigurasi dengan benar."
     },
-    "footer": "Panel 3x-ui",
+    "footer": "Panel rasa-XPanel",
     "fields": {
       "panelVersion": "Versi Panel",
       "xrayCore": "Inti Xray",
@@ -2667,13 +2667,13 @@
       "loginFailed": "Login Gagal"
     },
     "report": {
-      "title": "📊 Laporan Status 3x-ui",
+      "title": "📊 Laporan Status rasa-XPanel",
       "summary": "Laporan berkala status server dan proxy untuk **{{ .Host }}**",
-      "footer": "Laporan Terjadwal 3x-ui • Jadwal: {{ .RunTime }}"
+      "footer": "Laporan Terjadwal rasa-XPanel • Jadwal: {{ .RunTime }}"
     },
     "commands": {
-      "helpTitle": "🤖 Perintah Bot Discord 3x-ui",
-      "helpDescription": "Perintah yang tersedia untuk memantau dan mengelola server 3x-ui:",
+      "helpTitle": "🤖 Perintah Bot Discord rasa-XPanel",
+      "helpDescription": "Perintah yang tersedia untuk memantau dan mengelola server rasa-XPanel:",
       "helpStatus": "Tampilkan beban sistem, RAM, CPU, koneksi, dan pengguna online",
       "helpReport": "Buat laporan status lengkap (dengan cadangan DB jika dikonfigurasi)",
       "helpBackup": "Kirim file cadangan database sekarang juga",
@@ -2681,10 +2681,10 @@
       "helpInbounds": "Daftar semua inbound yang dikonfigurasi beserta port dan statistik klien",
       "helpRestart": "Mulai ulang inti Xray",
       "helpHelp": "Tampilkan daftar perintah ini",
-      "statusTitle": "⚡ Status Server 3x-ui",
+      "statusTitle": "⚡ Status Server rasa-XPanel",
       "statusDescription": "Metrik operasional terkini untuk **{{ .Host }}**",
       "backupTitle": "🗄️ Cadangan Database",
-      "backupDescription": "Arsip cadangan 3x-ui dibuat pada `{{ .Time }}`",
+      "backupDescription": "Arsip cadangan rasa-XPanel dibuat pada `{{ .Time }}`",
       "backupUnavailable": "❌ Layanan cadangan tidak tersedia",
       "backupFailed": "❌ Gagal membaca cadangan database: {{ .Error }}",
       "usageHint": "⚠️ Penggunaan: `!usage <email>` atau `/usage <email>`",

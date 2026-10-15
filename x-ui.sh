@@ -3504,7 +3504,7 @@ show_usage() {
 show_menu() {
     echo -e "
 ╔────────────────────────────────────────────────╗
-│  ${green}3X-UI Panel Management Script${plain}                │
+│  ${green}rasa-XPanel Management Script${plain}                │
 │  ${green}0.${plain} Exit Script                               │
 │────────────────────────────────────────────────│
 │  ${green}1.${plain} Install                                   │

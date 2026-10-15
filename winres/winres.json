@@ -11,7 +11,7 @@
           "name": "3x-ui",
           "version": ""
         },
-        "description": "3X-UI web panel for Xray-core",
+        "description": "rasa-XPanel web panel for Xray-core",
         "minimum-os": "win7",
         "execution-level": "as invoker",
         "ui-access": false,
@@ -38,7 +38,7 @@
         },
         "info": {
           "0409": {
-            "CompanyName": "MHSanaei",
+            "CompanyName": "rasa68",
             "FileDescription": "3X-UI web panel for Xray-core",
             "FileVersion": "",
             "InternalName": "3x-ui",

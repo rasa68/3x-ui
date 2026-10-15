@@ -484,7 +484,7 @@ func (g *GatewayClient) sendStatus(ctx context.Context) {
 
 	hostname, _ := os.Hostname()
 	if hostname == "" {
-		hostname = "3x-ui"
+		hostname = "rasa-XPanel"
 	}
 
 	days := status.Uptime / 86400

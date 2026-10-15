@@ -1,6 +1,6 @@
 {
-  "name": "3x-ui",
-  "short_name": "3x-ui",
+  "name": "rasa-XPanel",
+  "short_name": "rasa-XPanel",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

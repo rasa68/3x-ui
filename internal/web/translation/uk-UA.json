@@ -153,7 +153,7 @@
       "xrayUpdates": "Оновлення Xray",
       "xraySwitchClickDesk": "Вибирайте уважно, оскільки старіші версії можуть бути несумісними з поточними конфігураціями.",
       "updatePanel": "Оновити панель",
-      "panelUpdateDesc": "Це оновить 3X-UI до останнього релізу та перезапустить сервіс панелі.",
+      "panelUpdateDesc": "Це оновить rasa-XPanel до останнього релізу та перезапустить сервіс панелі.",
       "currentPanelVersion": "Поточна версія панелі",
       "latestPanelVersion": "Остання версія панелі",
       "panelUpToDate": "Панель оновлено",
@@ -217,7 +217,7 @@
       "xraySwitchVersionDialogDesc": "Це змінить версію Xray на #version#.",
       "xraySwitchVersionPopover": "Xray успішно оновлено",
       "panelUpdateDialog": "Ви дійсно хочете оновити панель?",
-      "panelUpdateDialogDesc": "Це оновить 3X-UI до #version# та перезапустить сервіс панелі.",
+      "panelUpdateDialogDesc": "Це оновить rasa-XPanel до #version# та перезапустить сервіс панелі.",
       "panelUpdateStartedPopover": "Розпочато оновлення панелі",
       "panelUpdateFailedTitle": "Не вдалося оновити панель",
       "panelUpdateFailedDesc": "Оновлення не завершилося успішно. Перевірте журнали сервера або виконайте 'x-ui update' у командному рядку.",
@@ -2420,12 +2420,12 @@
     },
     "sponsors": {
       "title": "Спонсори",
-      "intro": "Компанії, що підтримують розробку 3X-UI. Спонсорські посилання відкриваються в новій вкладці.",
+      "intro": "Компанії, що підтримують розробку rasa-XPanel. Спонсорські посилання відкриваються в новій вкладці.",
       "become": "Стати спонсором",
       "tag": "Спонсор",
       "visit": "Перейти",
       "yourBrand": "Тут може бути ваш бренд",
-      "yourBrandText": "Покажіть свою компанію тисячам адміністраторів серверів, які щодня відкривають 3X-UI."
+      "yourBrandText": "Покажіть свою компанію тисячам адміністраторів серверів, які щодня відкривають rasa-XPanel."
     }
   },
   "tgbot": {
@@ -2481,7 +2481,7 @@
       "report": "🕰 Заплановані звіти: {{ .RunTime }}\r\n",
       "datetime": "⏰ Дата й час: {{ .DateTime }}\r\n",
       "hostname": "💻 Хост: {{ .Hostname }}\r\n",
-      "version": "🚀 3X-UI Версія: {{ .Version }}\r\n",
+      "version": "🚀 rasa-XPanel Версія: {{ .Version }}\r\n",
       "xrayVersion": "📡 Xray Версія: {{ .XrayVersion }}\r\n",
       "ipv6": "🌐 IPv6: {{ .IPv6 }}\r\n",
       "ipv4": "🌐 IPv4: {{ .IPv4 }}\r\n",
@@ -2629,10 +2629,10 @@
   },
   "discord": {
     "test": {
-      "title": "Тестове сповіщення Discord від 3x-ui",
+      "title": "Тестове сповіщення Discord від rasa-XPanel",
       "body": "Це тестове сповіщення підтверджує, що сповіщення Discord налаштовано правильно."
     },
-    "footer": "Панель 3x-ui",
+    "footer": "Панель rasa-XPanel",
     "fields": {
       "panelVersion": "Версія панелі",
       "xrayCore": "Ядро Xray",
@@ -2667,13 +2667,13 @@
       "loginFailed": "Невдалий вхід"
     },
     "report": {
-      "title": "📊 Звіт про стан 3x-ui",
+      "title": "📊 Звіт про стан rasa-XPanel",
       "summary": "Періодичний звіт про стан сервера та проксі для **{{ .Host }}**",
-      "footer": "Плановий звіт 3x-ui • Розклад: {{ .RunTime }}"
+      "footer": "Плановий звіт rasa-XPanel • Розклад: {{ .RunTime }}"
     },
     "commands": {
-      "helpTitle": "🤖 Команди Discord-бота 3x-ui",
-      "helpDescription": "Доступні команди для моніторингу та керування сервером 3x-ui:",
+      "helpTitle": "🤖 Команди Discord-бота rasa-XPanel",
+      "helpDescription": "Доступні команди для моніторингу та керування сервером rasa-XPanel:",
       "helpStatus": "Показати навантаження системи, RAM, CPU, з'єднання та користувачів онлайн",
       "helpReport": "Сформувати повний звіт про стан (з резервною копією БД, якщо увімкнено)",
       "helpBackup": "Негайно надіслати файл резервної копії бази даних",
@@ -2681,10 +2681,10 @@
       "helpInbounds": "Список усіх налаштованих вхідних підключень із портами та статистикою клієнтів",
       "helpRestart": "Перезапустити ядро Xray",
       "helpHelp": "Показати цей список команд",
-      "statusTitle": "⚡ Стан сервера 3x-ui",
+      "statusTitle": "⚡ Стан сервера rasa-XPanel",
       "statusDescription": "Поточні робочі показники **{{ .Host }}**",
       "backupTitle": "🗄️ Резервна копія бази даних",
-      "backupDescription": "Резервну копію 3x-ui створено `{{ .Time }}`",
+      "backupDescription": "Резервну копію rasa-XPanel створено `{{ .Time }}`",
       "backupUnavailable": "❌ Служба резервного копіювання недоступна",
       "backupFailed": "❌ Не вдалося прочитати резервну копію бази даних: {{ .Error }}",
       "usageHint": "⚠️ Використання: `!usage <email>` або `/usage <email>`",
