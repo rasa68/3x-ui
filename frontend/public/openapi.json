@@ -10405,7 +10405,8 @@
                       "userAgent": "Happ/1.0",
                       "deviceOs": "android",
                       "osVersion": "15",
-                      "deviceModel": "Pixel 9",
+                      "deviceModel": "Google Pixel 9",
+                      "clientApp": "Happ 1.0",
                       "fingerprint": "6ad17c93e821"
                     }
                   ]

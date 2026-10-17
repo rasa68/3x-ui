@@ -85,6 +85,12 @@ export default function ClientHwidListModal({
                 <Typography.Text type="secondary">
                   {[entry.deviceOs, entry.osVersion].filter(Boolean).join(' ')}
                 </Typography.Text>
+                {entry.clientApp && (
+                  <>
+                    <br />
+                    <Typography.Text type="secondary">{entry.clientApp}</Typography.Text>
+                  </>
+                )}
                 <br />
                 <Typography.Text type="secondary">
                   {t('pages.clients.firstSeen')}: {formatDate(entry.firstSeen)}

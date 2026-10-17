@@ -21,6 +21,7 @@ type HwidRequest struct {
 	DeviceOS    string
 	OsVersion   string
 	DeviceModel string
+	ClientApp   string
 }
 
 type HwidGateResult struct {
@@ -58,6 +59,7 @@ type ClientHwidInfo struct {
 	DeviceOS    string `json:"deviceOs"`
 	OsVersion   string `json:"osVersion"`
 	DeviceModel string `json:"deviceModel"`
+	ClientApp   string `json:"clientApp"`
 	Fingerprint string `json:"fingerprint"`
 }
 
@@ -89,6 +91,7 @@ func normalizeHwidRequest(req HwidRequest) HwidRequest {
 		DeviceOS:    trimHwidMeta(req.DeviceOS),
 		OsVersion:   trimHwidMeta(req.OsVersion),
 		DeviceModel: trimHwidMeta(req.DeviceModel),
+		ClientApp:   trimHwidMeta(req.ClientApp),
 	}
 }
 
@@ -147,7 +150,7 @@ func (s *ClientService) EnforceHwidForSubID(subID string, req HwidRequest) (Hwid
 		err = tx.Where("sub_id = ? AND hwid_hash = ?", subID, hwidHash).First(&existing).Error
 		if err == nil {
 			if err := tx.Model(&model.ClientHwid{}).Where("id = ?", existing.Id).Updates(map[string]any{
-				"last_seen": now, "user_agent": req.UserAgent, "device_os": req.DeviceOS, "os_version": req.OsVersion, "device_model": req.DeviceModel,
+				"last_seen": now, "user_agent": req.UserAgent, "device_os": req.DeviceOS, "os_version": req.OsVersion, "device_model": req.DeviceModel, "client_app": req.ClientApp,
 			}).Error; err != nil {
 				return err
 			}
@@ -173,7 +176,7 @@ func (s *ClientService) EnforceHwidForSubID(subID string, req HwidRequest) (Hwid
 			res.LimitReached = true
 			return nil
 		}
-		if err := tx.Create(&model.ClientHwid{SubID: subID, HwidHash: hwidHash, FirstSeen: now, LastSeen: now, UserAgent: req.UserAgent, DeviceOS: req.DeviceOS, OsVersion: req.OsVersion, DeviceModel: req.DeviceModel}).Error; err != nil {
+		if err := tx.Create(&model.ClientHwid{SubID: subID, HwidHash: hwidHash, FirstSeen: now, LastSeen: now, UserAgent: req.UserAgent, DeviceOS: req.DeviceOS, OsVersion: req.OsVersion, DeviceModel: req.DeviceModel, ClientApp: req.ClientApp}).Error; err != nil {
 			return err
 		}
 		res.Allowed = true
@@ -190,8 +193,8 @@ func trackUnlimitedHwid(db *gorm.DB, subID string, req HwidRequest) {
 	now := time.Now().UnixMilli()
 	err := db.Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "sub_id"}, {Name: "hwid_hash"}},
-		DoUpdates: clause.AssignmentColumns([]string{"last_seen", "user_agent", "device_os", "os_version", "device_model"}),
-	}).Create(&model.ClientHwid{SubID: subID, HwidHash: hashHwid(req.Hwid), FirstSeen: now, LastSeen: now, UserAgent: req.UserAgent, DeviceOS: req.DeviceOS, OsVersion: req.OsVersion, DeviceModel: req.DeviceModel}).Error
+		DoUpdates: clause.AssignmentColumns([]string{"last_seen", "user_agent", "device_os", "os_version", "device_model", "client_app"}),
+	}).Create(&model.ClientHwid{SubID: subID, HwidHash: hashHwid(req.Hwid), FirstSeen: now, LastSeen: now, UserAgent: req.UserAgent, DeviceOS: req.DeviceOS, OsVersion: req.OsVersion, DeviceModel: req.DeviceModel, ClientApp: req.ClientApp}).Error
 	if err != nil {
 		logger.Warning("track HWID for unlimited subscription failed:", err)
 	}
@@ -263,6 +266,7 @@ func (s *ClientService) ListClientHwids(email string) ([]ClientHwidInfo, error) 
 			DeviceOS:    r.DeviceOS,
 			OsVersion:   r.OsVersion,
 			DeviceModel: r.DeviceModel,
+			ClientApp:   r.ClientApp,
 			Fingerprint: shortHwidFingerprint(r.HwidHash),
 		})
 	}

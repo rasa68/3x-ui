@@ -703,13 +703,7 @@ func (a *SUBController) subPageContext(page PageData) map[string]any {
 }
 
 func (a *SUBController) enforceHwid(c *gin.Context) bool {
-	result, err := a.clientService.EnforceHwidForSubID(c.Param("subid"), service.HwidRequest{
-		Hwid:        c.GetHeader("X-HWID"),
-		UserAgent:   c.GetHeader("User-Agent"),
-		DeviceOS:    c.GetHeader("X-Device-OS"),
-		OsVersion:   c.GetHeader("X-Ver-OS"),
-		DeviceModel: c.GetHeader("X-Device-Model"),
-	})
+	result, err := a.clientService.EnforceHwidForSubID(c.Param("subid"), hwidRequestFromContext(c))
 	if err != nil {
 		writeSubError(c, err)
 		return false

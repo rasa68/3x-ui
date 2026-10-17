@@ -8,6 +8,7 @@ export type ClientHwidInfo = {
   deviceOs: string;
   osVersion: string;
   deviceModel: string;
+  clientApp: string;
   fingerprint: string;
 };
 
