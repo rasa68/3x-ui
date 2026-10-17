@@ -9,37 +9,29 @@ import (
 )
 
 func TestResolveDeviceFromUserAgent(t *testing.T) {
+	d := func(model, os, ver, app string) resolvedDevice {
+		return resolvedDevice{Model: model, OS: os, OsVersion: ver, App: app}
+	}
 	cases := []struct {
 		name string
 		ua   string
 		want resolvedDevice
 	}{
-		{"iPhone via identifier and Darwin", "Happ/2.1.0 CFNetwork/1485 Darwin/23.1.0 iPhone15,2",
-			resolvedDevice{Model: "iPhone 14 Pro", OS: "iOS", OsVersion: "17", App: "Happ 2.1.0"}},
-		{"explicit iOS version wins", "Quantumult%20X/1.4.1 (iPhone14,5; iOS 16.6)",
-			resolvedDevice{Model: "iPhone 13", OS: "iOS", OsVersion: "16.6", App: "Quantumult X 1.4.1"}},
-		{"iPad", "Shadowrocket/2.2.40 iPad13,1 iPadOS 16.1",
-			resolvedDevice{Model: "iPad Air (4th gen)", OS: "iPadOS", OsVersion: "16.1", App: "Shadowrocket 2.2.40"}},
-		{"unknown apple identifier kept", "Streisand/1.5 iPhone99,9",
-			resolvedDevice{Model: "iPhone99,9", OS: "iOS", App: "Streisand 1.5"}},
-		{"darwin only is treated as iOS", "Streisand/1.5 CFNetwork/1568.100.1 Darwin/24.0.0",
-			resolvedDevice{OS: "iOS", OsVersion: "18", App: "Streisand 1.5"}},
-		{"samsung model number", "v2rayNG/1.8.5 Mozilla/5.0 (Linux; Android 14; SM-S928B Build/UP1A.231005.007)",
-			resolvedDevice{Model: "Samsung Galaxy S24 Ultra", OS: "Android", OsVersion: "14", App: "v2rayNG 1.8.5"}},
-		{"pixel without android version", "Hiddify/2.0.5 (android; Pixel 8 Pro)",
-			resolvedDevice{Model: "Google Pixel 8 Pro", OS: "Android", App: "Hiddify 2.0.5"}},
-		{"redmi", "Mozilla/5.0 (Linux; Android 13; Redmi Note 12 Build/TKQ1.221114.001)",
-			resolvedDevice{Model: "Xiaomi Redmi Note 12", OS: "Android", OsVersion: "13"}},
-		{"windows", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Clash-verge/1.7.7",
-			resolvedDevice{Model: "Windows PC", OS: "Windows", OsVersion: "10/11", App: "Clash Verge 1.7.7"}},
-		{"intel mac", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15",
-			resolvedDevice{Model: "Mac (Intel)", OS: "macOS", OsVersion: "10.15.7"}},
-		{"linux", "Mozilla/5.0 (X11; Linux x86_64)",
-			resolvedDevice{Model: "Linux PC", OS: "Linux"}},
-		{"curl is not an app", "curl/8.4.0", resolvedDevice{}},
-		{"generic app fallback", "MyVPN/3.2.1 (custom)", resolvedDevice{App: "MyVPN 3.2.1"}},
-		{"flclash is not plain clash", "FlClash/0.8.60", resolvedDevice{App: "FlClash 0.8.60"}},
-		{"empty", "", resolvedDevice{}},
+		{"iPhone via identifier and Darwin", "Happ/2.1.0 CFNetwork/1485 Darwin/23.1.0 iPhone15,2", d("iPhone 14 Pro", "iOS", "17", "Happ 2.1.0")},
+		{"explicit iOS version wins", "Quantumult%20X/1.4.1 (iPhone14,5; iOS 16.6)", d("iPhone 13", "iOS", "16.6", "Quantumult X 1.4.1")},
+		{"iPad", "Shadowrocket/2.2.40 iPad13,1 iPadOS 16.1", d("iPad Air (4th gen)", "iPadOS", "16.1", "Shadowrocket 2.2.40")},
+		{"unknown apple identifier kept", "Streisand/1.5 iPhone99,9", d("iPhone99,9", "iOS", "", "Streisand 1.5")},
+		{"darwin only is treated as iOS", "Streisand/1.5 CFNetwork/1568.100.1 Darwin/24.0.0", d("", "iOS", "18", "Streisand 1.5")},
+		{"samsung model number", "v2rayNG/1.8.5 Mozilla/5.0 (Linux; Android 14; SM-S928B Build/UP1A.231005.007)", d("Samsung Galaxy S24 Ultra", "Android", "14", "v2rayNG 1.8.5")},
+		{"pixel without android version", "Hiddify/2.0.5 (android; Pixel 8 Pro)", d("Google Pixel 8 Pro", "Android", "", "Hiddify 2.0.5")},
+		{"redmi", "Mozilla/5.0 (Linux; Android 13; Redmi Note 12 Build/TKQ1.221114.001)", d("Xiaomi Redmi Note 12", "Android", "13", "")},
+		{"windows", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Clash-verge/1.7.7", d("Windows PC", "Windows", "10/11", "Clash Verge 1.7.7")},
+		{"intel mac", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15", d("Mac (Intel)", "macOS", "10.15.7", "")},
+		{"linux", "Mozilla/5.0 (X11; Linux x86_64)", d("Linux PC", "Linux", "", "")},
+		{"curl is not an app", "curl/8.4.0", d("", "", "", "")},
+		{"generic app fallback", "MyVPN/3.2.1 (custom)", d("", "", "", "MyVPN 3.2.1")},
+		{"flclash is not plain clash", "FlClash/0.8.60", d("", "", "", "FlClash 0.8.60")},
+		{"empty", "", d("", "", "", "")},
 	}
 	for _, c := range cases {
 		if got := resolveDeviceFromUserAgent(c.ua); got != c.want {
