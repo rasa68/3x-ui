@@ -813,6 +813,7 @@
       "limitHwidDesc": "Máximo de dispositivos registrados para solicitudes de suscripción. 0 = ilimitado.",
       "hwidLog": "Dispositivos HWID",
       "hwidDevice": "Dispositivo registrado",
+      "hwidEstimated": "Estimado (sin HWID)",
       "noHwids": "Aún no hay dispositivos HWID",
       "firstSeen": "Visto por primera vez",
       "lastSeen": "Visto por última vez",

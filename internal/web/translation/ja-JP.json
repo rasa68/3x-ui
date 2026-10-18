@@ -813,6 +813,7 @@
       "limitHwidDesc": "サブスクリプション要求で登録できる最大デバイス数。0 = 無制限。",
       "hwidLog": "HWID デバイス",
       "hwidDevice": "登録済みデバイス",
+      "hwidEstimated": "推定(HWIDなし)",
       "noHwids": "HWID デバイスはまだありません",
       "firstSeen": "初回確認",
       "lastSeen": "最終確認",

@@ -75,6 +75,7 @@ func hwidRequestFromContext(c *gin.Context) service.HwidRequest {
 		OsVersion:   pick(firstHeader(c, osVerHeaders), dev.OsVersion),
 		DeviceModel: pick(firstNonEmpty(firstHeader(c, modelHeaders), firstQuery(c, modelQueries)), dev.Model),
 		ClientApp:   clip(dev.App),
+		ClientIP:    c.ClientIP(),
 	}
 }
 

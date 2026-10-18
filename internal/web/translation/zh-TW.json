@@ -813,6 +813,7 @@
       "limitHwidDesc": "訂閱請求最多可註冊的裝置數。0 = 不限制。",
       "hwidLog": "HWID 裝置",
       "hwidDevice": "已註冊裝置",
+      "hwidEstimated": "估算(未傳送 HWID)",
       "noHwids": "尚無 HWID 裝置",
       "firstSeen": "首次出現",
       "lastSeen": "最後出現",

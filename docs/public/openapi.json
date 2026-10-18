@@ -10407,6 +10407,7 @@
                       "osVersion": "15",
                       "deviceModel": "Google Pixel 9",
                       "clientApp": "Happ 1.0",
+                      "estimated": false,
                       "fingerprint": "6ad17c93e821"
                     }
                   ]

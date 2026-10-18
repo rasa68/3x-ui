@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
+	"net"
 	"strings"
 	"time"
 
@@ -22,6 +23,7 @@ type HwidRequest struct {
 	OsVersion   string
 	DeviceModel string
 	ClientApp   string
+	ClientIP    string
 }
 
 type HwidGateResult struct {
@@ -60,6 +62,7 @@ type ClientHwidInfo struct {
 	OsVersion   string `json:"osVersion"`
 	DeviceModel string `json:"deviceModel"`
 	ClientApp   string `json:"clientApp"`
+	Estimated   bool   `json:"estimated"`
 	Fingerprint string `json:"fingerprint"`
 }
 
@@ -92,6 +95,7 @@ func normalizeHwidRequest(req HwidRequest) HwidRequest {
 		OsVersion:   trimHwidMeta(req.OsVersion),
 		DeviceModel: trimHwidMeta(req.DeviceModel),
 		ClientApp:   trimHwidMeta(req.ClientApp),
+		ClientIP:    strings.TrimSpace(req.ClientIP),
 	}
 }
 
@@ -122,6 +126,8 @@ func (s *ClientService) EnforceHwidForSubID(subID string, req HwidRequest) (Hwid
 		res.Allowed = true
 		if len(req.Hwid) >= minHwidLength {
 			trackUnlimitedHwid(db, subID, req)
+		} else {
+			trackEstimatedHwid(db, subID, req)
 		}
 		return res, nil
 	}
@@ -130,6 +136,7 @@ func (s *ClientService) EnforceHwidForSubID(subID string, req HwidRequest) (Hwid
 	res.Limit = limit
 	if len(req.Hwid) < minHwidLength {
 		res.NotSupported = true
+		trackEstimatedHwid(db, subID, req)
 		return res, nil
 	}
 	hwidHash := hashHwid(req.Hwid)
@@ -155,7 +162,7 @@ func (s *ClientService) EnforceHwidForSubID(subID string, req HwidRequest) (Hwid
 				return err
 			}
 			var count int64
-			if err := tx.Model(&model.ClientHwid{}).Where("sub_id = ?", subID).Count(&count).Error; err != nil {
+			if err := tx.Model(&model.ClientHwid{}).Where("sub_id = ? AND estimated = ?", subID, false).Count(&count).Error; err != nil {
 				return err
 			}
 			res.Allowed = true
@@ -167,7 +174,7 @@ func (s *ClientService) EnforceHwidForSubID(subID string, req HwidRequest) (Hwid
 			return err
 		}
 		var count int64
-		if err := tx.Model(&model.ClientHwid{}).Where("sub_id = ?", subID).Count(&count).Error; err != nil {
+		if err := tx.Model(&model.ClientHwid{}).Where("sub_id = ? AND estimated = ?", subID, false).Count(&count).Error; err != nil {
 			return err
 		}
 		res.Registered = int(count)
@@ -179,6 +186,7 @@ func (s *ClientService) EnforceHwidForSubID(subID string, req HwidRequest) (Hwid
 		if err := tx.Create(&model.ClientHwid{SubID: subID, HwidHash: hwidHash, FirstSeen: now, LastSeen: now, UserAgent: req.UserAgent, DeviceOS: req.DeviceOS, OsVersion: req.OsVersion, DeviceModel: req.DeviceModel, ClientApp: req.ClientApp}).Error; err != nil {
 			return err
 		}
+		dropEstimatedTwin(tx, subID, req)
 		res.Allowed = true
 		res.Registered = int(count) + 1
 		res.LimitReached = res.Registered >= limit
@@ -197,6 +205,100 @@ func trackUnlimitedHwid(db *gorm.DB, subID string, req HwidRequest) {
 	}).Create(&model.ClientHwid{SubID: subID, HwidHash: hashHwid(req.Hwid), FirstSeen: now, LastSeen: now, UserAgent: req.UserAgent, DeviceOS: req.DeviceOS, OsVersion: req.OsVersion, DeviceModel: req.DeviceModel, ClientApp: req.ClientApp}).Error
 	if err != nil {
 		logger.Warning("track HWID for unlimited subscription failed:", err)
+		return
+	}
+	dropEstimatedTwin(db, subID, req)
+}
+
+const (
+	estimatedHwidPrefix   = "est:"
+	estimatedHwidTTLMs    = 30 * 24 * 60 * 60 * 1000
+	maxEstimatedPerSubID  = 20
+	estimatedPruneScanMax = 1000
+)
+
+// estimatedAppName drops the trailing version token: "Happ 2.1.0" -> "Happ".
+func estimatedAppName(app string) string {
+	f := strings.Fields(app)
+	if len(f) > 1 && len(f[len(f)-1]) > 0 && f[len(f)-1][0] >= '0' && f[len(f)-1][0] <= '9' {
+		f = f[:len(f)-1]
+	}
+	return strings.Join(f, " ")
+}
+
+func ipPrefixForFingerprint(raw string) string {
+	ip := net.ParseIP(raw)
+	if ip == nil {
+		return ""
+	}
+	if v4 := ip.To4(); v4 != nil {
+		return v4.Mask(net.CIDRMask(24, 32)).String()
+	}
+	return ip.Mask(net.CIDRMask(64, 128)).String()
+}
+
+// estimatedHwidHash fingerprints a request that sent no HWID. App, model and OS
+// identify the device when a model is known; without a model the IP network is
+// added so unrelated phones behind different networks are not merged. Returns
+// "" when the request carries nothing to fingerprint.
+func estimatedHwidHash(req HwidRequest) string {
+	app := strings.ToLower(estimatedAppName(req.ClientApp))
+	model := strings.ToLower(strings.TrimSpace(req.DeviceModel))
+	osName := strings.ToLower(strings.TrimSpace(req.DeviceOS))
+	if app == "" && model == "" && osName == "" {
+		return ""
+	}
+	parts := []string{app, model, osName}
+	if model == "" {
+		parts = append(parts, ipPrefixForFingerprint(req.ClientIP))
+	}
+	return hashHwid(estimatedHwidPrefix + strings.Join(parts, "|"))
+}
+
+// trackEstimatedHwid lists a device that sent no HWID. Best effort and
+// display-only: estimated rows are excluded from every limit count.
+func trackEstimatedHwid(db *gorm.DB, subID string, req HwidRequest) {
+	hash := estimatedHwidHash(req)
+	if hash == "" {
+		return
+	}
+	now := time.Now().UnixMilli()
+	err := db.Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "sub_id"}, {Name: "hwid_hash"}},
+		DoUpdates: clause.AssignmentColumns([]string{"last_seen", "user_agent", "device_os", "os_version", "device_model", "client_app"}),
+	}).Create(&model.ClientHwid{SubID: subID, HwidHash: hash, FirstSeen: now, LastSeen: now, UserAgent: req.UserAgent, DeviceOS: req.DeviceOS, OsVersion: req.OsVersion, DeviceModel: req.DeviceModel, ClientApp: req.ClientApp, Estimated: true}).Error
+	if err != nil {
+		logger.Warning("track estimated device failed:", err)
+		return
+	}
+	pruneEstimatedHwids(db, subID, now)
+}
+
+// pruneEstimatedHwids drops estimated rows older than the TTL and keeps only
+// the newest maxEstimatedPerSubID, so spoofed User-Agents cannot grow the table.
+func pruneEstimatedHwids(db *gorm.DB, subID string, now int64) {
+	if err := db.Where("sub_id = ? AND estimated = ? AND last_seen < ?", subID, true, now-estimatedHwidTTLMs).Delete(&model.ClientHwid{}).Error; err != nil {
+		logger.Warning("prune estimated devices failed:", err)
+		return
+	}
+	var stale []int
+	err := db.Model(&model.ClientHwid{}).
+		Where("sub_id = ? AND estimated = ?", subID, true).
+		Order("last_seen DESC").
+		Order("id DESC").
+		Limit(estimatedPruneScanMax).
+		Offset(maxEstimatedPerSubID).
+		Pluck("id", &stale).Error
+	if err == nil && len(stale) > 0 {
+		_ = db.Where("id IN ?", stale).Delete(&model.ClientHwid{}).Error
+	}
+}
+
+// dropEstimatedTwin removes the estimated row of a device once it registers
+// with a real HWID, so it is not listed twice.
+func dropEstimatedTwin(db *gorm.DB, subID string, req HwidRequest) {
+	if hash := estimatedHwidHash(req); hash != "" {
+		_ = db.Where("sub_id = ? AND hwid_hash = ? AND estimated = ?", subID, hash, true).Delete(&model.ClientHwid{}).Error
 	}
 }
 
@@ -228,7 +330,7 @@ func (s *ClientService) HwidSlotStatusForSubID(subID string) (status HwidSlotSta
 	}
 
 	var registered int64
-	if err := db.Model(&model.ClientHwid{}).Where("sub_id = ?", subID).Count(&registered).Error; err != nil {
+	if err := db.Model(&model.ClientHwid{}).Where("sub_id = ? AND estimated = ?", subID, false).Count(&registered).Error; err != nil {
 		return status, false, err
 	}
 	status.Active = true
@@ -267,6 +369,7 @@ func (s *ClientService) ListClientHwids(email string) ([]ClientHwidInfo, error) 
 			OsVersion:   r.OsVersion,
 			DeviceModel: r.DeviceModel,
 			ClientApp:   r.ClientApp,
+			Estimated:   r.Estimated,
 			Fingerprint: shortHwidFingerprint(r.HwidHash),
 		})
 	}
@@ -345,7 +448,7 @@ func trimClientHwidsForSubID(tx *gorm.DB, subID string, limit int) error {
 	}
 	var keep []int
 	if err := tx.Model(&model.ClientHwid{}).
-		Where("sub_id = ?", subID).
+		Where("sub_id = ? AND estimated = ?", subID, false).
 		Order("last_seen DESC").
 		Order("id DESC").
 		Limit(limit).
@@ -353,9 +456,9 @@ func trimClientHwidsForSubID(tx *gorm.DB, subID string, limit int) error {
 		return err
 	}
 	if len(keep) == 0 {
-		return tx.Where("sub_id = ?", subID).Delete(&model.ClientHwid{}).Error
+		return tx.Where("sub_id = ? AND estimated = ?", subID, false).Delete(&model.ClientHwid{}).Error
 	}
-	return tx.Where("sub_id = ? AND id NOT IN ?", subID, keep).Delete(&model.ClientHwid{}).Error
+	return tx.Where("sub_id = ? AND estimated = ? AND id NOT IN ?", subID, false, keep).Delete(&model.ClientHwid{}).Error
 }
 
 func clearClientHwidsBySubIDTx(tx *gorm.DB, subIDs ...string) error {

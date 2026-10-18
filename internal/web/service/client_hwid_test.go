@@ -297,3 +297,75 @@ func TestClientHwidSlotStatus(t *testing.T) {
 		t.Fatalf("disabled subId = (%+v, %v, %v), want zero status and found=false", status, found, err)
 	}
 }
+
+func TestEstimatedHwidHash(t *testing.T) {
+	a := estimatedHwidHash(HwidRequest{ClientApp: "Happ 2.1.0", DeviceModel: "Pixel 8", DeviceOS: "Android", ClientIP: "1.2.3.4"})
+	b := estimatedHwidHash(HwidRequest{ClientApp: "Happ 2.2.0", DeviceModel: "pixel 8", DeviceOS: "android", ClientIP: "9.9.9.9"})
+	if a == "" || a != b {
+		t.Fatalf("same app/model/os must match across versions and IPs: %q vs %q", a, b)
+	}
+	c := estimatedHwidHash(HwidRequest{ClientApp: "v2rayNG 1.9.0", ClientIP: "1.2.3.4"})
+	d := estimatedHwidHash(HwidRequest{ClientApp: "v2rayNG 1.9.1", ClientIP: "1.2.3.99"})
+	e := estimatedHwidHash(HwidRequest{ClientApp: "v2rayNG 1.9.1", ClientIP: "5.6.7.8"})
+	if c == "" || c != d || c == e {
+		t.Fatalf("without a model the IP network separates devices: %q %q %q", c, d, e)
+	}
+	if estimatedHwidHash(HwidRequest{ClientIP: "1.2.3.4"}) != "" {
+		t.Fatal("nothing to fingerprint must give an empty hash")
+	}
+}
+
+func TestEstimatedHwidDoesNotCountTowardLimit(t *testing.T) {
+	initClientHwidTestDB(t)
+	svc := &ClientService{}
+	rec := seedHwidClient(t, 1)
+
+	res, err := svc.EnforceHwidForSubID(rec.SubID, HwidRequest{ClientApp: "v2rayNG 1.9.0", DeviceModel: "Pixel 8", DeviceOS: "Android"})
+	if err != nil {
+		t.Fatalf("gate without HWID: %v", err)
+	}
+	if res.Allowed || !res.NotSupported {
+		t.Fatalf("a request without HWID must stay blocked under a limit: %+v", res)
+	}
+	list, err := svc.ListClientHwids(rec.Email)
+	if err != nil {
+		t.Fatalf("list: %v", err)
+	}
+	if len(list) != 1 || !list[0].Estimated || list[0].ClientApp != "v2rayNG 1.9.0" {
+		t.Fatalf("expected one estimated device, got %+v", list)
+	}
+
+	res, err = svc.EnforceHwidForSubID(rec.SubID, HwidRequest{Hwid: "real-device-1", UserAgent: "x"})
+	if err != nil {
+		t.Fatalf("gate with HWID: %v", err)
+	}
+	if !res.Allowed {
+		t.Fatalf("the estimated row must not use up the only slot: %+v", res)
+	}
+}
+
+func TestEstimatedHwidTrackedWithoutLimitAndReplacedByRealHwid(t *testing.T) {
+	initClientHwidTestDB(t)
+	svc := &ClientService{}
+	rec := seedHwidClient(t, 0)
+	req := HwidRequest{ClientApp: "v2rayNG 1.9.0", DeviceModel: "Pixel 8", DeviceOS: "Android"}
+
+	for range 2 {
+		if _, err := svc.EnforceHwidForSubID(rec.SubID, req); err != nil {
+			t.Fatalf("gate: %v", err)
+		}
+	}
+	list, _ := svc.ListClientHwids(rec.Email)
+	if len(list) != 1 || !list[0].Estimated {
+		t.Fatalf("repeated requests must stay one estimated row, got %+v", list)
+	}
+
+	req.Hwid = "real-device-1"
+	if _, err := svc.EnforceHwidForSubID(rec.SubID, req); err != nil {
+		t.Fatalf("gate with HWID: %v", err)
+	}
+	list, _ = svc.ListClientHwids(rec.Email)
+	if len(list) != 1 || list[0].Estimated {
+		t.Fatalf("a real HWID must replace its estimated twin, got %+v", list)
+	}
+}

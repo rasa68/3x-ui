@@ -813,6 +813,7 @@
       "limitHwidDesc": "Abonelik istekleri için en fazla kayıtlı cihaz. 0 = sınırsız.",
       "hwidLog": "HWID Cihazları",
       "hwidDevice": "Kayıtlı cihaz",
+      "hwidEstimated": "Tahmini (HWID yok)",
       "noHwids": "Henüz HWID cihazı yok",
       "firstSeen": "İlk görülme",
       "lastSeen": "Son görülme",

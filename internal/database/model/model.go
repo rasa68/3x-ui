@@ -1064,6 +1064,9 @@ type ClientHwid struct {
 	OsVersion   string `json:"osVersion" gorm:"column:os_version"`
 	DeviceModel string `json:"deviceModel" gorm:"column:device_model"`
 	ClientApp   string `json:"clientApp" gorm:"column:client_app"`
+	// Estimated rows are fingerprints of requests that sent no HWID; they are
+	// listed for visibility only and never count toward the device limit.
+	Estimated bool `json:"estimated" gorm:"column:estimated;not null;default:false"`
 }
 
 func (ClientHwid) TableName() string { return "client_hwids" }

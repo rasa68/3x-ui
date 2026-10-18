@@ -813,6 +813,7 @@
       "limitHwidDesc": "Jumlah maksimum perangkat terdaftar untuk permintaan langganan. 0 = tidak terbatas.",
       "hwidLog": "Perangkat HWID",
       "hwidDevice": "Perangkat terdaftar",
+      "hwidEstimated": "Perkiraan (tanpa HWID)",
       "noHwids": "Belum ada perangkat HWID",
       "firstSeen": "Pertama terlihat",
       "lastSeen": "Terakhir terlihat",
