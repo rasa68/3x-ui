@@ -3,6 +3,7 @@ package service
 import (
 	"path/filepath"
 	"testing"
+	"time"
 
 	"github.com/mhsanaei/3x-ui/v3/internal/database"
 	"github.com/mhsanaei/3x-ui/v3/internal/database/dbtest"
@@ -301,17 +302,90 @@ func TestClientHwidSlotStatus(t *testing.T) {
 func TestEstimatedHwidHash(t *testing.T) {
 	a := estimatedHwidHash(HwidRequest{ClientApp: "Happ 2.1.0", DeviceModel: "Pixel 8", DeviceOS: "Android", ClientIP: "1.2.3.4"})
 	b := estimatedHwidHash(HwidRequest{ClientApp: "Happ 2.2.0", DeviceModel: "pixel 8", DeviceOS: "android", ClientIP: "9.9.9.9"})
-	if a == "" || a != b {
-		t.Fatalf("same app/model/os must match across versions and IPs: %q vs %q", a, b)
+	if a == "" || a[:estimatedHashHalfChars] != b[:estimatedHashHalfChars] {
+		t.Fatalf("same app/model/os must share the kind half across versions and IPs: %q vs %q", a, b)
+	}
+	if a == b {
+		t.Fatal("different networks must differ in the network half")
 	}
 	c := estimatedHwidHash(HwidRequest{ClientApp: "v2rayNG 1.9.0", ClientIP: "1.2.3.4"})
 	d := estimatedHwidHash(HwidRequest{ClientApp: "v2rayNG 1.9.1", ClientIP: "1.2.3.99"})
-	e := estimatedHwidHash(HwidRequest{ClientApp: "v2rayNG 1.9.1", ClientIP: "5.6.7.8"})
-	if c == "" || c != d || c == e {
-		t.Fatalf("without a model the IP network separates devices: %q %q %q", c, d, e)
+	if c == "" || c != d {
+		t.Fatalf("same network and kind must give the same hash: %q vs %q", c, d)
+	}
+	u1 := estimatedHwidHash(HwidRequest{UserAgent: "MyCustomUA 1.2", ClientIP: "1.2.3.4"})
+	u2 := estimatedHwidHash(HwidRequest{UserAgent: "MyCustomUA 3.4", ClientIP: "1.2.3.4"})
+	if u1 == "" || u1 != u2 {
+		t.Fatalf("a custom user agent must still fingerprint, ignoring its numbers: %q vs %q", u1, u2)
 	}
 	if estimatedHwidHash(HwidRequest{ClientIP: "1.2.3.4"}) != "" {
 		t.Fatal("nothing to fingerprint must give an empty hash")
+	}
+}
+
+func estimatedRowCount(t *testing.T, subID string) int64 {
+	t.Helper()
+	var n int64
+	if err := database.GetDB().Model(&model.ClientHwid{}).Where("sub_id = ? AND estimated = ?", subID, true).Count(&n).Error; err != nil {
+		t.Fatalf("count: %v", err)
+	}
+	return n
+}
+
+func TestEstimatedHwidCustomUserAgentIsListed(t *testing.T) {
+	initClientHwidTestDB(t)
+	svc := &ClientService{}
+	rec := seedHwidClient(t, 0)
+	if _, err := svc.EnforceHwidForSubID(rec.SubID, HwidRequest{UserAgent: "MyCustomUA", ClientIP: "1.2.3.4"}); err != nil {
+		t.Fatalf("gate: %v", err)
+	}
+	if n := estimatedRowCount(t, rec.SubID); n != 1 {
+		t.Fatalf("a custom user agent must still list one device, got %d", n)
+	}
+}
+
+func TestEstimatedHwidIgnoresUnknownSubscriptions(t *testing.T) {
+	initClientHwidTestDB(t)
+	svc := &ClientService{}
+	seedHwidClient(t, 0)
+	if _, err := svc.EnforceHwidForSubID("no-such-sub", HwidRequest{ClientApp: "v2rayNG 1.9.0"}); err != nil {
+		t.Fatalf("gate: %v", err)
+	}
+	if n := estimatedRowCount(t, "no-such-sub"); n != 0 {
+		t.Fatalf("scanning a random sub id must not create rows, got %d", n)
+	}
+}
+
+func TestEstimatedHwidFollowsNetworkChangeButSeparatesConcurrentDevices(t *testing.T) {
+	initClientHwidTestDB(t)
+	svc := &ClientService{}
+	rec := seedHwidClient(t, 0)
+	req := HwidRequest{ClientApp: "v2rayNG 1.9.0"}
+
+	req.ClientIP = "1.1.1.1"
+	if _, err := svc.EnforceHwidForSubID(rec.SubID, req); err != nil {
+		t.Fatalf("gate: %v", err)
+	}
+	// Right away from another network: a second device active at the same time.
+	req.ClientIP = "2.2.2.2"
+	if _, err := svc.EnforceHwidForSubID(rec.SubID, req); err != nil {
+		t.Fatalf("gate: %v", err)
+	}
+	if n := estimatedRowCount(t, rec.SubID); n != 2 {
+		t.Fatalf("concurrent networks must be two devices, got %d", n)
+	}
+
+	// Both go quiet; one phone then reappears on a third network and takes over a quiet row.
+	old := nowMillisForTest() - estimatedMigrateAfter - 1000
+	if err := database.GetDB().Model(&model.ClientHwid{}).Where("sub_id = ?", rec.SubID).Update("last_seen", old).Error; err != nil {
+		t.Fatalf("age rows: %v", err)
+	}
+	req.ClientIP = "3.3.3.3"
+	if _, err := svc.EnforceHwidForSubID(rec.SubID, req); err != nil {
+		t.Fatalf("gate: %v", err)
+	}
+	if n := estimatedRowCount(t, rec.SubID); n != 2 {
+		t.Fatalf("a quiet device moving network must not add a row, got %d", n)
 	}
 }
 
@@ -369,3 +443,5 @@ func TestEstimatedHwidTrackedWithoutLimitAndReplacedByRealHwid(t *testing.T) {
 		t.Fatalf("a real HWID must replace its estimated twin, got %+v", list)
 	}
 }
+
+func nowMillisForTest() int64 { return time.Now().UnixMilli() }

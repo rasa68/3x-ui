@@ -15,6 +15,7 @@ import (
 	"github.com/mhsanaei/3x-ui/v3/internal/database/model"
 	"github.com/mhsanaei/3x-ui/v3/internal/logger"
 	"github.com/mhsanaei/3x-ui/v3/internal/util/common"
+	"github.com/mhsanaei/3x-ui/v3/internal/util/subquery"
 	"github.com/mhsanaei/3x-ui/v3/internal/web/service"
 	"github.com/mhsanaei/3x-ui/v3/internal/xray"
 
@@ -221,7 +222,8 @@ func (t *Tgbot) buildSubscriptionURLs(email string) (string, string, error) {
 	if !subJsonEnable {
 		subJsonURL = ""
 	}
-	return subURL, subJsonURL, nil
+	extra, _ := t.settingService.GetSubQueryParams()
+	return subquery.Append(subURL, extra), subquery.Append(subJsonURL, extra), nil
 }
 
 // sendClientSubLinks sends the subscription links for the client to the chat.

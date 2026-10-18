@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"net"
+	"regexp"
 	"strings"
 	"time"
 
@@ -211,11 +212,15 @@ func trackUnlimitedHwid(db *gorm.DB, subID string, req HwidRequest) {
 }
 
 const (
-	estimatedHwidPrefix   = "est:"
-	estimatedHwidTTLMs    = 30 * 24 * 60 * 60 * 1000
-	maxEstimatedPerSubID  = 20
-	estimatedPruneScanMax = 1000
+	estimatedHwidPrefix    = "est:"
+	estimatedHwidTTLMs     = 30 * 24 * 60 * 60 * 1000
+	estimatedMigrateAfter  = 15 * 60 * 1000
+	maxEstimatedPerSubID   = 20
+	estimatedPruneScanMax  = 1000
+	estimatedHashHalfChars = 32
 )
+
+var digitRuns = regexp.MustCompile(`[0-9]+`)
 
 // estimatedAppName drops the trailing version token: "Happ 2.1.0" -> "Happ".
 func estimatedAppName(app string) string {
@@ -237,36 +242,80 @@ func ipPrefixForFingerprint(raw string) string {
 	return ip.Mask(net.CIDRMask(64, 128)).String()
 }
 
-// estimatedHwidHash fingerprints a request that sent no HWID. App, model and OS
-// identify the device when a model is known; without a model the IP network is
-// added so unrelated phones behind different networks are not merged. Returns
-// "" when the request carries nothing to fingerprint.
-func estimatedHwidHash(req HwidRequest) string {
+// estimatedKind describes what kind of client sent a request without a HWID:
+// app, model and OS when they are known, otherwise the User-Agent with its
+// numbers removed (so a custom or generic UA still identifies the client and
+// version bumps do not create a new device). "" means nothing to go on.
+func estimatedKind(req HwidRequest) string {
 	app := strings.ToLower(estimatedAppName(req.ClientApp))
 	model := strings.ToLower(strings.TrimSpace(req.DeviceModel))
 	osName := strings.ToLower(strings.TrimSpace(req.DeviceOS))
-	if app == "" && model == "" && osName == "" {
+	if app != "" || model != "" || osName != "" {
+		return strings.Join([]string{app, model, osName}, "|")
+	}
+	ua := strings.ToLower(strings.TrimSpace(digitRuns.ReplaceAllString(req.UserAgent, "")))
+	if ua == "" {
 		return ""
 	}
-	parts := []string{app, model, osName}
-	if model == "" {
-		parts = append(parts, ipPrefixForFingerprint(req.ClientIP))
+	return "ua:" + ua
+}
+
+// estimatedHwidHash is kindHash(32 hex) + networkHash(32 hex): the first half
+// groups the same kind of client, the second half tells networks apart.
+func estimatedHwidHash(req HwidRequest) string {
+	kind := estimatedKind(req)
+	if kind == "" {
+		return ""
 	}
-	return hashHwid(estimatedHwidPrefix + strings.Join(parts, "|"))
+	return estimatedKindHash(kind) + hashHwid("net:" + ipPrefixForFingerprint(req.ClientIP))[:estimatedHashHalfChars]
+}
+
+func estimatedKindHash(kind string) string {
+	return hashHwid(estimatedHwidPrefix + kind)[:estimatedHashHalfChars]
 }
 
 // trackEstimatedHwid lists a device that sent no HWID. Best effort and
 // display-only: estimated rows are excluded from every limit count.
+//
+// One device that changes network (Wi-Fi <-> mobile) must not become two
+// rows, so the network only separates clients that are active at the same
+// time: a request from a new network takes over the row of the same kind that
+// has been quiet for estimatedMigrateAfter, and only becomes a new row when
+// every row of that kind was seen more recently than that.
 func trackEstimatedHwid(db *gorm.DB, subID string, req HwidRequest) {
 	hash := estimatedHwidHash(req)
 	if hash == "" {
 		return
 	}
+	var known int64
+	if err := db.Model(&model.ClientRecord{}).Where("sub_id = ?", subID).Count(&known).Error; err != nil || known == 0 {
+		return
+	}
+	kindHash := hash[:estimatedHashHalfChars]
 	now := time.Now().UnixMilli()
-	err := db.Clauses(clause.OnConflict{
-		Columns:   []clause.Column{{Name: "sub_id"}, {Name: "hwid_hash"}},
-		DoUpdates: clause.AssignmentColumns([]string{"last_seen", "user_agent", "device_os", "os_version", "device_model", "client_app"}),
-	}).Create(&model.ClientHwid{SubID: subID, HwidHash: hash, FirstSeen: now, LastSeen: now, UserAgent: req.UserAgent, DeviceOS: req.DeviceOS, OsVersion: req.OsVersion, DeviceModel: req.DeviceModel, ClientApp: req.ClientApp, Estimated: true}).Error
+	err := db.Transaction(func(tx *gorm.DB) error {
+		var rows []model.ClientHwid
+		if err := tx.Where("sub_id = ? AND estimated = ? AND hwid_hash LIKE ?", subID, true, kindHash+"%").
+			Order("last_seen DESC").Find(&rows).Error; err != nil {
+			return err
+		}
+		meta := map[string]any{
+			"last_seen": now, "user_agent": req.UserAgent, "device_os": req.DeviceOS,
+			"os_version": req.OsVersion, "device_model": req.DeviceModel, "client_app": req.ClientApp,
+		}
+		for _, r := range rows {
+			if r.HwidHash == hash {
+				return tx.Model(&model.ClientHwid{}).Where("id = ?", r.Id).Updates(meta).Error
+			}
+		}
+		for _, r := range rows {
+			if now-r.LastSeen >= estimatedMigrateAfter {
+				meta["hwid_hash"] = hash
+				return tx.Model(&model.ClientHwid{}).Where("id = ?", r.Id).Updates(meta).Error
+			}
+		}
+		return tx.Create(&model.ClientHwid{SubID: subID, HwidHash: hash, FirstSeen: now, LastSeen: now, UserAgent: req.UserAgent, DeviceOS: req.DeviceOS, OsVersion: req.OsVersion, DeviceModel: req.DeviceModel, ClientApp: req.ClientApp, Estimated: true}).Error
+	})
 	if err != nil {
 		logger.Warning("track estimated device failed:", err)
 		return
@@ -294,11 +343,19 @@ func pruneEstimatedHwids(db *gorm.DB, subID string, now int64) {
 	}
 }
 
-// dropEstimatedTwin removes the estimated row of a device once it registers
-// with a real HWID, so it is not listed twice.
+// dropEstimatedTwin removes the most recently seen estimated row of the same
+// kind once that device registers with a real HWID, so it is not listed twice.
 func dropEstimatedTwin(db *gorm.DB, subID string, req HwidRequest) {
-	if hash := estimatedHwidHash(req); hash != "" {
-		_ = db.Where("sub_id = ? AND hwid_hash = ? AND estimated = ?", subID, hash, true).Delete(&model.ClientHwid{}).Error
+	kind := estimatedKind(req)
+	if kind == "" {
+		return
+	}
+	var id int
+	err := db.Model(&model.ClientHwid{}).
+		Where("sub_id = ? AND estimated = ? AND hwid_hash LIKE ?", subID, true, estimatedKindHash(kind)+"%").
+		Order("last_seen DESC").Limit(1).Pluck("id", &id).Error
+	if err == nil && id != 0 {
+		_ = db.Where("id = ?", id).Delete(&model.ClientHwid{}).Error
 	}
 }
 

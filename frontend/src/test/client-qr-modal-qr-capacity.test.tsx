@@ -13,6 +13,7 @@ const SUB_SETTINGS = {
   enable: true,
   subURI: 'https://panel.example/sub/',
   subJsonURI: '',
+  subQueryParams: '',
   subJsonEnable: false,
   happLinkEnable: true,
 };

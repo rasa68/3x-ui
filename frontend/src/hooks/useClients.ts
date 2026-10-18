@@ -54,6 +54,7 @@ interface SubSettings {
   happLinkEnable: boolean;
   subURI: string;
   subJsonURI: string;
+  subQueryParams: string;
   subJsonEnable: boolean;
   subClashURI: string;
   subClashEnable: boolean;
@@ -301,6 +302,7 @@ export function useClients(options: UseClientsOptions = {}) {
       happLinkEnable: defaults.happLinkEnable === true,
       subURI: (defaults.subURI as string) || '',
       subJsonURI: (defaults.subJsonURI as string) || '',
+      subQueryParams: (defaults.subQueryParams as string) || '',
       subJsonEnable: !!defaults.subJsonEnable,
       subClashURI: (defaults.subClashURI as string) || '',
       subClashEnable: !!defaults.subClashEnable,
@@ -311,6 +313,7 @@ export function useClients(options: UseClientsOptions = {}) {
       defaults.happLinkEnable,
       defaults.subURI,
       defaults.subJsonURI,
+      defaults.subQueryParams,
       defaults.subJsonEnable,
       defaults.subClashURI,
       defaults.subClashEnable,

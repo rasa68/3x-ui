@@ -30,6 +30,7 @@ import {
 } from './helpers';
 import type { ClientSetting, ClientStats, InboundInfo, InboundInfoModalProps } from './types';
 import './InboundInfoModal.css';
+import { appendSubQuery } from '@/lib/sub-query';
 
 const EMPTY_HOSTS: NonNullable<InboundInfoModalProps['hosts']> = [];
 
@@ -210,9 +211,16 @@ export default function InboundInfoModal({
     }
 
     if (clientSet?.subId) {
-      setSubLink((subSettings?.subURI || '') + clientSet.subId);
+      setSubLink(
+        appendSubQuery((subSettings?.subURI || '') + clientSet.subId, subSettings?.subQueryParams),
+      );
       setSubJsonLink(
-        subSettings?.subJsonEnable ? (subSettings?.subJsonURI || '') + clientSet.subId : '',
+        subSettings?.subJsonEnable
+          ? appendSubQuery(
+              (subSettings?.subJsonURI || '') + clientSet.subId,
+              subSettings?.subQueryParams,
+            )
+          : '',
       );
     } else {
       setSubLink('');

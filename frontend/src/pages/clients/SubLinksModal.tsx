@@ -5,11 +5,13 @@ import type { TableColumnType } from 'antd';
 import { CopyOutlined, DownloadOutlined } from '@ant-design/icons';
 
 import type { ClientRecord } from '@/hooks/useClients';
+import { appendSubQuery } from '@/lib/sub-query';
 
 interface SubSettings {
   enable: boolean;
   subURI: string;
   subJsonURI: string;
+  subQueryParams: string;
   subJsonEnable: boolean;
 }
 
@@ -53,8 +55,10 @@ export default function SubLinksModal({
         key: email,
         email,
         subId: c.subId,
-        link: subSettings!.subURI + c.subId,
-        jsonLink: jsonEnabled ? subSettings!.subJsonURI + c.subId : '',
+        link: appendSubQuery(subSettings!.subURI + c.subId, subSettings!.subQueryParams),
+        jsonLink: jsonEnabled
+          ? appendSubQuery(subSettings!.subJsonURI + c.subId, subSettings!.subQueryParams)
+          : '',
       });
     }
     return out;

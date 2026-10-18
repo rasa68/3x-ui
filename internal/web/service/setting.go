@@ -179,6 +179,7 @@ var defaultValueMap = map[string]string{
 	"subUpdates":                  "12",
 	"subEncrypt":                  "true",
 	"subURI":                      "",
+	"subQueryParams":              "",
 	"subJsonPath":                 "/json/",
 	"subJsonURI":                  "",
 	"subClashEnable":              "false",
@@ -1036,6 +1037,11 @@ func (s *SettingService) GetSubHappLocalProxyAuth() (string, error) {
 
 func (s *SettingService) GetSubIncyEnableRouting() (bool, error) {
 	return s.getBool("subIncyEnableRouting")
+}
+
+// GetSubQueryParams returns the JSON array of extra query parameters appended to subscription links.
+func (s *SettingService) GetSubQueryParams() (string, error) {
+	return s.getString("subQueryParams")
 }
 
 func (s *SettingService) GetSubIncyRoutingRules() (string, error) {
@@ -1939,6 +1945,7 @@ func (s *SettingService) GetDefaultSettings(host string) (any, error) {
 		"subClashEnable":   func() (any, error) { return s.GetSubClashEnable() },
 		"subTitle":         func() (any, error) { return s.GetSubTitle() },
 		"subURI":           func() (any, error) { return s.GetSubURI() },
+		"subQueryParams":   func() (any, error) { return s.GetSubQueryParams() },
 		"subJsonURI":       func() (any, error) { return s.GetSubJsonURI() },
 		"subClashURI":      func() (any, error) { return s.GetSubClashURI() },
 		"datepicker":       func() (any, error) { return s.GetDatepicker() },

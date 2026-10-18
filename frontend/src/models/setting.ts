@@ -54,6 +54,7 @@ export class AllSetting {
   subRoutingRules = '';
   subIncyEnableRouting = false;
   subIncyRoutingRules = '';
+  subQueryParams = '';
   subListen = '';
   subPort = 2096;
   subPath = '/sub/';
