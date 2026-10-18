@@ -492,6 +492,9 @@
           "subProfileUrl": {
             "type": "string"
           },
+          "subQueryParams": {
+            "type": "string"
+          },
           "subRoutingRules": {
             "type": "string"
           },
@@ -744,6 +747,7 @@
           "subPort",
           "subProfileMode",
           "subProfileUrl",
+          "subQueryParams",
           "subRoutingRules",
           "subShowIdentityOnAllLinks",
           "subSupportUrl",
@@ -1268,6 +1272,9 @@
           "subProfileUrl": {
             "type": "string"
           },
+          "subQueryParams": {
+            "type": "string"
+          },
           "subRoutingRules": {
             "type": "string"
           },
@@ -1528,6 +1535,7 @@
           "subPort",
           "subProfileMode",
           "subProfileUrl",
+          "subQueryParams",
           "subRoutingRules",
           "subShowIdentityOnAllLinks",
           "subSupportUrl",

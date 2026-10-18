@@ -466,6 +466,9 @@ export const SCHEMAS: Record<string, unknown> = {
       "subProfileUrl": {
         "type": "string"
       },
+      "subQueryParams": {
+        "type": "string"
+      },
       "subRoutingRules": {
         "type": "string"
       },
@@ -718,6 +721,7 @@ export const SCHEMAS: Record<string, unknown> = {
       "subPort",
       "subProfileMode",
       "subProfileUrl",
+      "subQueryParams",
       "subRoutingRules",
       "subShowIdentityOnAllLinks",
       "subSupportUrl",
@@ -1242,6 +1246,9 @@ export const SCHEMAS: Record<string, unknown> = {
       "subProfileUrl": {
         "type": "string"
       },
+      "subQueryParams": {
+        "type": "string"
+      },
       "subRoutingRules": {
         "type": "string"
       },
@@ -1502,6 +1509,7 @@ export const SCHEMAS: Record<string, unknown> = {
       "subPort",
       "subProfileMode",
       "subProfileUrl",
+      "subQueryParams",
       "subRoutingRules",
       "subShowIdentityOnAllLinks",
       "subSupportUrl",

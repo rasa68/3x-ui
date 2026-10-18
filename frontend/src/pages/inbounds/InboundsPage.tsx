@@ -48,6 +48,7 @@ const PromptModal = lazy(() => import('@/components/feedback/PromptModal'));
 import { useInbounds } from './useInbounds';
 import { InboundList } from './list';
 import { LazyMount } from '@/components/utility';
+import { appendSubQuery } from '@/lib/sub-query';
 const InboundFormModal = lazy(() => import('./form/InboundFormModal'));
 const CloneInboundModal = lazy(() => import('./CloneInboundModal'));
 const InboundInfoModal = lazy(() => import('./info/InboundInfoModal'));
@@ -396,7 +397,7 @@ export default function InboundsPage() {
       const subLinks: string[] = [];
       for (const c of clients) {
         if (c.subId && subSettings.subURI) {
-          subLinks.push(subSettings.subURI + c.subId);
+          subLinks.push(appendSubQuery(subSettings.subURI + c.subId, subSettings.subQueryParams));
         }
       }
       openText({
@@ -428,7 +429,7 @@ export default function InboundsPage() {
       const clients = settings.clients || [];
       for (const c of clients) {
         if (c.subId && subSettings.subURI) {
-          out.push(subSettings.subURI + c.subId);
+          out.push(appendSubQuery(subSettings.subURI + c.subId, subSettings.subQueryParams));
         }
       }
     }

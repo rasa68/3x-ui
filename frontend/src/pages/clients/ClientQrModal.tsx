@@ -24,12 +24,14 @@ import {
 import { buildTuicClientConfig, findTuicInbound, isTuicClient } from './tuicConfig';
 import { tunnelConfigEndpoints, tunnelEndpointLabel } from './tunnelEndpoints';
 import type { HostRecord } from '@/schemas/api/host';
+import { appendSubQuery } from '@/lib/sub-query';
 
 interface SubSettings {
   enable: boolean;
   happLinkEnable?: boolean;
   subURI: string;
   subJsonURI: string;
+  subQueryParams: string;
   subJsonEnable: boolean;
   publicHost?: string;
 }
@@ -210,6 +212,7 @@ const DEFAULT_SUB: SubSettings = {
   happLinkEnable: false,
   subURI: '',
   subJsonURI: '',
+  subQueryParams: '',
   subJsonEnable: false,
   publicHost: '',
 };
@@ -218,7 +221,9 @@ export default function ClientQrModal(props: ClientQrModalProps) {
   const subSettings = props.subSettings ?? DEFAULT_SUB;
   const subId = props.client?.subId ?? '';
   const subLink =
-    subId && subSettings.enable && subSettings.subURI ? subSettings.subURI + subId : '';
+    subId && subSettings.enable && subSettings.subURI
+      ? appendSubQuery(subSettings.subURI + subId, subSettings.subQueryParams)
+      : '';
   const happLinkEnabled = subSettings.happLinkEnable === true;
   // A gate or source change remounts this scope to clear Happ state and retire any in-flight response.
   const scopeKey = `${props.client?.id ?? ''}\0${subId}\0${subLink}\0${happLinkEnabled ? 1 : 0}`;
@@ -242,10 +247,13 @@ function ClientQrModalContent({
 
   const subId = client?.subId;
   const subEnabled = !!subSettings?.enable;
-  const subLink = subId && subEnabled && subSettings?.subURI ? subSettings.subURI + subId : '';
+  const subLink =
+    subId && subEnabled && subSettings?.subURI
+      ? appendSubQuery(subSettings.subURI + subId, subSettings.subQueryParams)
+      : '';
   const subJsonLink =
     subId && subEnabled && subSettings?.subJsonEnable && subSettings?.subJsonURI
-      ? subSettings.subJsonURI + subId
+      ? appendSubQuery(subSettings.subJsonURI + subId, subSettings.subQueryParams)
       : '';
   const clientId = client?.id;
   const clientSubId = subId ?? '';

@@ -27,6 +27,7 @@ const SUB_SETTINGS = {
   enable: true,
   subURI: 'https://panel.example/sub/',
   subJsonURI: '',
+  subQueryParams: '',
   subJsonEnable: false,
   happLinkEnable: true,
 };
@@ -160,6 +161,7 @@ describe('ClientQrModal Happ presentation', () => {
       enable: SUB_SETTINGS.enable,
       subURI: SUB_SETTINGS.subURI,
       subJsonURI: SUB_SETTINGS.subJsonURI,
+      subQueryParams: SUB_SETTINGS.subQueryParams,
       subJsonEnable: SUB_SETTINGS.subJsonEnable,
     };
     if (gate !== undefined) subSettings.happLinkEnable = gate;
@@ -189,6 +191,7 @@ describe('ClientQrModal Happ presentation', () => {
         enable: SUB_SETTINGS.enable,
         subURI: SUB_SETTINGS.subURI,
         subJsonURI: SUB_SETTINGS.subJsonURI,
+        subQueryParams: SUB_SETTINGS.subQueryParams,
         subJsonEnable: SUB_SETTINGS.subJsonEnable,
       };
       if (gate !== undefined) subSettings.happLinkEnable = gate;

@@ -11,6 +11,7 @@ import (
 
 	"github.com/mhsanaei/3x-ui/v3/internal/util/common"
 	"github.com/mhsanaei/3x-ui/v3/internal/util/cronspec"
+	"github.com/mhsanaei/3x-ui/v3/internal/util/subquery"
 )
 
 type Msg struct {
@@ -115,6 +116,7 @@ type AllSetting struct {
 	RestartXrayOnClientDisable  bool   `json:"restartXrayOnClientDisable" form:"restartXrayOnClientDisable"`
 	SubEncrypt                  bool   `json:"subEncrypt" form:"subEncrypt"`
 	SubURI                      string `json:"subURI" form:"subURI"`
+	SubQueryParams              string `json:"subQueryParams" form:"subQueryParams"`
 	SubJsonPath                 string `json:"subJsonPath" form:"subJsonPath"`
 	SubJsonURI                  string `json:"subJsonURI" form:"subJsonURI"`
 	SubClashEnable              bool   `json:"subClashEnable" form:"subClashEnable"`
@@ -272,6 +274,10 @@ func checkIPOrCIDRList(list, message string) error {
 }
 
 func (s *AllSetting) CheckValid() error {
+	if err := subquery.Validate(s.SubQueryParams); err != nil {
+		return common.NewError(err.Error())
+	}
+
 	if s.WebListen != "" {
 		ip := net.ParseIP(s.WebListen)
 		if ip == nil {

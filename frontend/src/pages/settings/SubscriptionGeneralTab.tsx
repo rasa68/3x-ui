@@ -21,6 +21,7 @@ import { sanitizePath, normalizePath } from './uriPath';
 import HappSettingsContent from './HappSettingsContent';
 import IncySettingsContent from './IncySettingsContent';
 import { remoteSourceBadge } from './subscriptionShared';
+import SubQueryParamsEditor from './SubQueryParamsEditor';
 
 interface SubscriptionGeneralTabProps {
   allSetting: AllSetting;
@@ -146,6 +147,16 @@ export default function SubscriptionGeneralTab({
                   value={allSetting.subURI}
                   placeholder="(http|https)://domain[:port]/path/"
                   onChange={(e) => updateSetting({ subURI: e.target.value })}
+                />
+              </SettingListItem>
+              <SettingListItem
+                paddings="small"
+                title={t('pages.settings.subQueryParams')}
+                description={t('pages.settings.subQueryParamsDesc')}
+              >
+                <SubQueryParamsEditor
+                  value={allSetting.subQueryParams}
+                  onChange={(subQueryParams) => updateSetting({ subQueryParams })}
                 />
               </SettingListItem>
             </>

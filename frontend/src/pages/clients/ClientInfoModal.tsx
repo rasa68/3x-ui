@@ -33,6 +33,7 @@ import {
 import { tunnelConfigEndpoints, tunnelEndpointLabel } from './tunnelEndpoints';
 import type { HostRecord } from '@/schemas/api/host';
 import './ClientInfoModal.css';
+import { appendSubQuery } from '@/lib/sub-query';
 
 const INBOUND_PROTOCOL_COLORS: Record<string, string> = {
   vless: 'blue',
@@ -55,6 +56,7 @@ interface SubSettings {
   enable: boolean;
   subURI: string;
   subJsonURI: string;
+  subQueryParams: string;
   subJsonEnable: boolean;
   subClashURI: string;
   subClashEnable: boolean;
@@ -83,6 +85,7 @@ const DEFAULT_SUB: SubSettings = {
   enable: false,
   subURI: '',
   subJsonURI: '',
+  subQueryParams: '',
   subJsonEnable: false,
   subClashURI: '',
   subClashEnable: false,
@@ -176,14 +179,16 @@ export default function ClientInfoModal({
   }, [totalBytes, used]);
 
   const subId = client?.subId;
-  const subLink = subId && subSettings?.subURI ? subSettings.subURI + subId : '';
+  const extraQuery = subSettings?.subQueryParams;
+  const subLink =
+    subId && subSettings?.subURI ? appendSubQuery(subSettings.subURI + subId, extraQuery) : '';
   const subJsonLink =
     subId && subSettings?.subJsonEnable && subSettings?.subJsonURI
-      ? subSettings.subJsonURI + subId
+      ? appendSubQuery(subSettings.subJsonURI + subId, extraQuery)
       : '';
   const subClashLink =
     subId && subSettings?.subClashEnable && subSettings?.subClashURI
-      ? subSettings.subClashURI + subId
+      ? appendSubQuery(subSettings.subClashURI + subId, extraQuery)
       : '';
 
   const showSubscription = !!(subSettings?.enable && client?.subId);

@@ -60,6 +60,7 @@ export const AllSettingSchema = z
     subRoutingRules: z.string().optional(),
     subIncyEnableRouting: z.boolean().optional(),
     subIncyRoutingRules: z.string().optional(),
+    subQueryParams: z.string().optional(),
     subListen: z.string().optional(),
     subPort: port.optional(),
     subPath: absolutePath.optional(),

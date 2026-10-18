@@ -26,6 +26,7 @@ import (
 	"github.com/mhsanaei/3x-ui/v3/internal/util/common"
 	"github.com/mhsanaei/3x-ui/v3/internal/util/maskcompat"
 	"github.com/mhsanaei/3x-ui/v3/internal/util/random"
+	"github.com/mhsanaei/3x-ui/v3/internal/util/subquery"
 	wgutil "github.com/mhsanaei/3x-ui/v3/internal/util/wireguard"
 	"github.com/mhsanaei/3x-ui/v3/internal/web/service"
 	"github.com/mhsanaei/3x-ui/v3/internal/xray"
@@ -3172,7 +3173,8 @@ func (s *SubService) BuildURLs(subPath, subJsonPath, subClashPath, subId string)
 	subJsonURL = s.buildSingleURL(configuredSubJsonURI, jsonClashBase, subJsonPath, subId)
 	subClashURL = s.buildSingleURL(configuredSubClashURI, jsonClashBase, subClashPath, subId)
 
-	return subURL, subJsonURL, subClashURL
+	extra, _ := s.settingService.GetSubQueryParams()
+	return subquery.Append(subURL, extra), subquery.Append(subJsonURL, extra), subquery.Append(subClashURL, extra)
 }
 
 // extractBaseFromURI extracts scheme://host from a configured URI.

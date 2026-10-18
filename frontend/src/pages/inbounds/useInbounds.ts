@@ -26,6 +26,7 @@ export interface SubSettings {
   subTitle: string;
   subURI: string;
   subJsonURI: string;
+  subQueryParams: string;
   subJsonEnable: boolean;
   // Configured public host (Sub Domain, else Web Domain) used as the share/QR
   // link host when the panel is reached on a loopback address. Empty if neither
@@ -250,6 +251,7 @@ export function useInbounds() {
       subTitle: defaults.subTitle || '',
       subURI: defaults.subURI || '',
       subJsonURI: defaults.subJsonURI || '',
+      subQueryParams: (defaults.subQueryParams as string) || '',
       subJsonEnable: !!defaults.subJsonEnable,
       publicHost: defaults.subDomain || defaults.webDomain || '',
     }),
@@ -258,6 +260,7 @@ export function useInbounds() {
       defaults.subTitle,
       defaults.subURI,
       defaults.subJsonURI,
+      defaults.subQueryParams,
       defaults.subJsonEnable,
       defaults.subDomain,
       defaults.webDomain,

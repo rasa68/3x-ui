@@ -45,6 +45,7 @@ import { useTheme } from '@/hooks/useTheme';
 import type { ClientRecord, InboundOption } from '@/schemas/client';
 import { commandPaletteStore, useCommandPalette } from './useCommandPalette';
 import './CommandPalette.css';
+import { appendSubQuery } from '@/lib/sub-query';
 
 interface PaletteItem {
   id: string;
@@ -198,11 +199,11 @@ export default function CommandPalette() {
         messageApi.warning(t('pages.clients.noSubId'));
         return;
       }
-      const link = `${allSetting.subURI}${client.subId}`;
+      const link = appendSubQuery(`${allSetting.subURI}${client.subId}`, allSetting.subQueryParams);
       const ok = await ClipboardManager.copyText(link);
       if (ok) messageApi.success(t('copied'));
     },
-    [allSetting.subURI, messageApi, t],
+    [allSetting.subURI, allSetting.subQueryParams, messageApi, t],
   );
 
   const restartXray = useCallback(async () => {
