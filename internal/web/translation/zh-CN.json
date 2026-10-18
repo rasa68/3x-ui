@@ -813,6 +813,7 @@
       "limitHwidDesc": "订阅请求最多可注册的设备数。0 = 不限制。",
       "hwidLog": "HWID 设备",
       "hwidDevice": "已注册设备",
+      "hwidEstimated": "估算(未发送 HWID)",
       "noHwids": "暂无 HWID 设备",
       "firstSeen": "首次出现",
       "lastSeen": "最后出现",

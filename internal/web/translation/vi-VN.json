@@ -813,6 +813,7 @@
       "limitHwidDesc": "Số thiết bị đăng ký tối đa cho yêu cầu đăng ký. 0 = không giới hạn.",
       "hwidLog": "Thiết bị HWID",
       "hwidDevice": "Thiết bị đã đăng ký",
+      "hwidEstimated": "Ước tính (không có HWID)",
       "noHwids": "Chưa có thiết bị HWID",
       "firstSeen": "Lần đầu thấy",
       "lastSeen": "Lần cuối thấy",

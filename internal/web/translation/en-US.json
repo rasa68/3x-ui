@@ -813,6 +813,7 @@
       "limitHwidDesc": "Maximum registered devices for subscription requests. 0 = unlimited.",
       "hwidLog": "HWID Devices",
       "hwidDevice": "Registered device",
+      "hwidEstimated": "Estimated (no HWID sent)",
       "noHwids": "No HWID devices yet",
       "firstSeen": "First seen",
       "lastSeen": "Last seen",

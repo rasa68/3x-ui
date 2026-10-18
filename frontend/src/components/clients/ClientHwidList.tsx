@@ -81,6 +81,9 @@ export default function ClientHwidListModal({
                 <Typography.Text strong>
                   {entry.deviceModel || entry.userAgent || t('pages.clients.hwidDevice')}
                 </Typography.Text>
+                {entry.estimated && (
+                  <Tag style={{ marginInlineStart: 8 }}>{t('pages.clients.hwidEstimated')}</Tag>
+                )}
                 <br />
                 <Typography.Text type="secondary">
                   {[entry.deviceOs, entry.osVersion].filter(Boolean).join(' ')}
