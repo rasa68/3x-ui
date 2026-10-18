@@ -13,12 +13,15 @@ import (
 // Header and query aliases accepted for the device identity. The first
 // non-empty value wins; headers are checked before query parameters.
 var (
-	hwidHeaders   = []string{"X-HWID", "X-Device-Id", "X-Device-ID", "X-Client-HWID", "HWID"}
-	hwidQueries   = []string{"hwid", "device_id", "deviceId", "client_id", "uid"}
+	hwidHeaders   = []string{"X-HWID", "X-Device-Id", "X-Device-ID", "X-Client-HWID", "HWID", "Device-Id"}
+	hwidQueries   = []string{"hwid", "device_id", "deviceId", "client_id", "clientId", "uid"}
 	modelHeaders  = []string{"X-Device-Model", "X-Model", "X-Device-Name", "Device-Model"}
-	modelQueries  = []string{"model", "device", "device_model", "phone", "deviceName"}
-	osHeaders     = []string{"X-Device-OS"}
+	modelQueries  = []string{"model", "device", "device_model", "deviceModel", "phone", "deviceName"}
+	osHeaders     = []string{"X-Device-OS", "X-OS", "X-Client-OS"}
+	osQueries     = []string{"os"}
 	osVerHeaders  = []string{"X-Ver-OS"}
+	appHeaders    = []string{"X-Client", "X-Client-App"}
+	appQueries    = []string{"app"}
 	maxDeviceMeta = 256
 )
 
@@ -71,10 +74,10 @@ func hwidRequestFromContext(c *gin.Context) service.HwidRequest {
 	return service.HwidRequest{
 		Hwid:        firstNonEmpty(firstHeader(c, hwidHeaders), firstQuery(c, hwidQueries)),
 		UserAgent:   ua,
-		DeviceOS:    pick(firstHeader(c, osHeaders), dev.OS),
+		DeviceOS:    pick(firstNonEmpty(firstHeader(c, osHeaders), firstQuery(c, osQueries)), dev.OS),
 		OsVersion:   pick(firstHeader(c, osVerHeaders), dev.OsVersion),
 		DeviceModel: pick(firstNonEmpty(firstHeader(c, modelHeaders), firstQuery(c, modelQueries)), dev.Model),
-		ClientApp:   clip(dev.App),
+		ClientApp:   pick(firstNonEmpty(firstHeader(c, appHeaders), firstQuery(c, appQueries)), dev.App),
 		ClientIP:    c.ClientIP(),
 	}
 }
@@ -134,6 +137,9 @@ var appPatterns = []struct {
 	{regexp.MustCompile(`(?i)Loon/([\w.\-]+)`), "Loon"},
 	{regexp.MustCompile(`(?i)Karing/([\w.\-]+)`), "Karing"},
 	{regexp.MustCompile(`(?i)FoXray/([\w.\-]+)`), "FoXray"},
+	{regexp.MustCompile(`(?i)Matsuri/([\w.\-]+)`), "Matsuri"},
+	{regexp.MustCompile(`(?i)\bPassWall\b`), "PassWall"},
+	{regexp.MustCompile(`(?i)\bOpenClash\b`), "OpenClash"},
 }
 
 // Generic HTTP stacks and browsers are not VPN apps.
@@ -148,7 +154,10 @@ var notApps = map[string]bool{
 func resolveApp(ua string) string {
 	for _, p := range appPatterns {
 		if m := p.re.FindStringSubmatch(ua); m != nil {
-			return p.name + " " + m[1]
+			if len(m) > 1 && m[1] != "" {
+				return p.name + " " + m[1]
+			}
+			return p.name
 		}
 	}
 	if m := genericApp.FindStringSubmatch(strings.TrimSpace(ua)); m != nil && !notApps[strings.ToLower(m[1])] {

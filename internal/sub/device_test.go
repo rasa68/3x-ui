@@ -31,6 +31,8 @@ func TestResolveDeviceFromUserAgent(t *testing.T) {
 		{"curl is not an app", "curl/8.4.0", d("", "", "", "")},
 		{"generic app fallback", "MyVPN/3.2.1 (custom)", d("", "", "", "MyVPN 3.2.1")},
 		{"flclash is not plain clash", "FlClash/0.8.60", d("", "", "", "FlClash 0.8.60")},
+		{"matsuri", "Matsuri/0.8.1 Mozilla/5.0 (Linux; Android 13; Pixel 7 Build/TQ3A)", d("Google Pixel 7", "Android", "13", "Matsuri 0.8.1")},
+		{"passwall without version", "PassWall subscription fetch", d("", "", "", "PassWall")},
 		{"empty", "", d("", "", "", "")},
 	}
 	for _, c := range cases {
@@ -91,6 +93,18 @@ func TestHwidRequestFromContext(t *testing.T) {
 	t.Run("explicit os headers kept", func(t *testing.T) {
 		got := hwidRequestFromContext(newHwidTestContext("/sub/x", map[string]string{"X-Device-OS": "android", "X-Ver-OS": "15"}))
 		if got.DeviceOS != "android" || got.OsVersion != "15" {
+			t.Errorf("got %+v", got)
+		}
+	})
+	t.Run("tx-ui style extra aliases", func(t *testing.T) {
+		got := hwidRequestFromContext(newHwidTestContext("/sub/x?clientId=dev-12345&deviceModel=Mate60&os=HarmonyOS&app=MyApp%201.0", nil))
+		if got.Hwid != "dev-12345" || got.DeviceModel != "Mate60" || got.DeviceOS != "HarmonyOS" || got.ClientApp != "MyApp 1.0" {
+			t.Errorf("got %+v", got)
+		}
+	})
+	t.Run("extra headers", func(t *testing.T) {
+		got := hwidRequestFromContext(newHwidTestContext("/sub/x", map[string]string{"Device-Id": "hdr-device-1", "X-Client-OS": "Android", "X-Client-App": "Custom 2.0"}))
+		if got.Hwid != "hdr-device-1" || got.DeviceOS != "Android" || got.ClientApp != "Custom 2.0" {
 			t.Errorf("got %+v", got)
 		}
 	})
