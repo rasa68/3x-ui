@@ -25,7 +25,7 @@ func onlineButtonLabel(email string, tags []string, remarkByTag map[string]strin
 		if fallback == "" {
 			return email
 		}
-		return email + " - " + fallback
+		return email + " · " + fallback
 	}
-	return email + " - " + strings.Join(names, ", ")
+	return email + " · " + strings.Join(names, ", ")
 }

@@ -10,13 +10,13 @@ func TestOnlineButtonLabel(t *testing.T) {
 		fallback string
 		want     string
 	}{
-		{"single inbound", []string{"in-443"}, "", "alice - Germany"},
-		{"multiple inbounds all listed", []string{"in-443", "in-80"}, "", "alice - Germany, Finland"},
-		{"tag without remark falls back to tag", []string{"in-8443"}, "", "alice - in-8443"},
-		{"duplicate names collapse", []string{"in-443", "in-443"}, "", "alice - Germany"},
-		{"no attribution uses legacy remark", nil, "Old", "alice - Old"},
+		{"single inbound", []string{"in-443"}, "", "alice · Germany"},
+		{"multiple inbounds all listed", []string{"in-443", "in-80"}, "", "alice · Germany, Finland"},
+		{"tag without remark falls back to tag", []string{"in-8443"}, "", "alice · in-8443"},
+		{"duplicate names collapse", []string{"in-443", "in-443"}, "", "alice · Germany"},
+		{"no attribution uses legacy remark", nil, "Old", "alice · Old"},
 		{"no attribution and no remark is just the email", nil, "", "alice"},
-		{"attribution wins over legacy remark", []string{"in-80"}, "Old", "alice - Finland"},
+		{"attribution wins over legacy remark", []string{"in-80"}, "Old", "alice · Finland"},
 	}
 	for _, c := range cases {
 		if got := onlineButtonLabel("alice", c.tags, remarks, c.fallback); got != c.want {
