@@ -391,7 +391,6 @@ func dropEstimatedTwin(db *gorm.DB, subID string, req HwidRequest) {
 	if err == nil && id != 0 {
 		_ = db.Where("id = ?", id).Delete(&model.ClientHwid{}).Error
 	}
-	return !limited
 }
 
 // HwidSlotStatusForSubID is SELECT-only: it must never write client_hwids or
