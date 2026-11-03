@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, useId } from 'react';
 import type { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Button, Checkbox, Form, Input, InputNumber, Modal, Select, Tag } from 'antd';
@@ -65,6 +65,7 @@ const MAX_CUSTOM_ROWS = 1_000_000;
 
 export default function XrayLogModal({ open, onClose }: XrayLogModalProps) {
   const { t } = useTranslation();
+  const uid = useId();
   const { datepicker } = useDatepicker();
   const { isMobile } = useMediaQuery();
   const [rowsChoice, setRowsChoice] = useState('20');
@@ -185,6 +186,7 @@ export default function XrayLogModal({ open, onClose }: XrayLogModalProps) {
       <Form layout="inline" className="log-toolbar">
         <Form.Item>
           <Select
+            aria-label={t('pages.index.logLines')}
             value={rowsChoice}
             size="small"
             style={{ width: 100 }}
@@ -215,8 +217,9 @@ export default function XrayLogModal({ open, onClose }: XrayLogModalProps) {
             />
           </Form.Item>
         )}
-        <Form.Item label={t('filter')} className="filter-item">
+        <Form.Item htmlFor={`${uid}-filter`} label={t('filter')} className="filter-item">
           <Input
+            id={`${uid}-filter`}
             value={filter}
             size="small"
             onChange={(e) => setFilter(e.target.value)}
@@ -243,7 +246,7 @@ export default function XrayLogModal({ open, onClose }: XrayLogModalProps) {
           <Button
             type="primary"
             onClick={download}
-            icon={<DownloadOutlined />}
+            icon={<DownloadOutlined aria-hidden />}
             aria-label={t('download')}
           />
         </Form.Item>

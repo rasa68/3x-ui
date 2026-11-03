@@ -230,6 +230,8 @@ var (
 	xrayVersionTimeout      = 5 * time.Second
 	// OnCrash is called when xray crashes unexpectedly. Set from web layer.
 	OnCrash func(err error)
+	// ErrXrayNotRunning reports an operation that requires a running core when xray is stopped.
+	ErrXrayNotRunning = errors.New("xray is not running")
 )
 
 // newProcess creates a new internal process struct for Xray.
@@ -246,6 +248,9 @@ func newProcess(config *Config) *process {
 func newTestProcess(config *Config, configPath string) *process {
 	p := newProcess(config)
 	p.configPath = configPath
+	if config != nil {
+		p.refreshAPIPort()
+	}
 	return p
 }
 
@@ -761,7 +766,7 @@ func (p *process) waitForCommand(cmd *exec.Cmd, done chan struct{}) {
 // Stop terminates the running Xray process.
 func (p *process) Stop() error {
 	if !p.IsRunning() {
-		return errors.New("xray is not running")
+		return ErrXrayNotRunning
 	}
 	p.intentionalStop.Store(true)
 
@@ -771,7 +776,7 @@ func (p *process) Stop() error {
 	cmd := p.cmd
 	p.mu.RUnlock()
 	if cmd == nil || cmd.Process == nil {
-		return errors.New("xray is not running")
+		return ErrXrayNotRunning
 	}
 
 	// Remove temporary config file used for test runs so main config is never touched

@@ -57,6 +57,7 @@ export default function SubQueryParamsEditor({ value, onChange }: SubQueryParams
               value={row.key}
               options={options}
               placeholder="key"
+              aria-label={t('pages.settings.subQueryParams')}
               status={keyInvalid ? 'error' : undefined}
               style={{ width: 180 }}
               onChange={(key) => commit(rows.map((r, i) => (i === index ? { ...r, key } : r)))}
@@ -64,14 +65,15 @@ export default function SubQueryParamsEditor({ value, onChange }: SubQueryParams
             <Input
               value={row.value}
               placeholder="value"
+              aria-label={t('pages.settings.subQueryParams')}
               maxLength={SUB_QUERY_MAX_VALUE_LEN}
               onChange={(e) =>
                 commit(rows.map((r, i) => (i === index ? { ...r, value: e.target.value } : r)))
               }
             />
             <Button
-              aria-label="remove"
-              icon={<DeleteOutlined />}
+              aria-label={t('delete')}
+              icon={<DeleteOutlined aria-hidden />}
               onClick={() => commit(rows.filter((_, i) => i !== index))}
             />
           </div>
@@ -79,7 +81,7 @@ export default function SubQueryParamsEditor({ value, onChange }: SubQueryParams
       })}
       <div>
         <Button
-          icon={<PlusOutlined />}
+          icon={<PlusOutlined aria-hidden />}
           disabled={rows.length >= SUB_QUERY_MAX_PARAMS}
           onClick={() => setRows([...rows, { key: '', value: '' }])}
         >
