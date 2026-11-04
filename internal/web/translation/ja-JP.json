@@ -2645,7 +2645,9 @@
       "qrLegendJSON": "{{ .Code }}. JSON サブスクリプション",
       "qrLegendLink": "{{ .Code }}. アプリのリンク {{ .App }}",
       "backupFailed": "データベースを読み取れませんでした。バックアップは送信されていません。",
-      "privateOnly": "🤖 このボットは個人チャットでのみ動作します。ダイレクトメッセージで開いてください。"
+      "privateOnly": "🤖 このボットは個人チャットでのみ動作します。ダイレクトメッセージで開いてください。",
+      "hwidSummary": "🔐 HWID 上限: {{ .Limit }} · 登録デバイス: {{ .Count }}\n\n",
+      "hwidEstimated": "推定"
     },
     "buttons": {
       "closeKeyboard": "❌ キーボードを閉じる",
@@ -2705,7 +2707,9 @@
       "qrCode": "🔳 QR code",
       "broadcast": "📢 一斉送信",
       "attachInbound": "インバウンドを追加 ({{ .Count }})",
-      "attachDone": "✅ 完了"
+      "attachDone": "✅ 完了",
+      "hwidLimit": "🔐 HWID 上限",
+      "hwidDevices": "📱 HWID デバイス"
     },
     "answers": {
       "broadcastStarted": "🚀 一括送信を開始しました。",
@@ -2732,7 +2736,9 @@
       "askToAddUserId": "設定が見つかりませんでした！\r\n管理者に問い合わせて、設定にTelegramユーザーのChatIDを使用してください。\r\n\r\nあなたのユーザーChatID：<code>{{ .TgUserID }}</code>",
       "chooseClient": "インバウンド {{ .Inbound }} のクライアントを選択",
       "chooseInbound": "インバウンドを選択",
-      "qrCodeForClient": "クライアント {{ .Email }} のQRコード:"
+      "qrCodeForClient": "クライアント {{ .Email }} のQRコード:",
+      "setHwidLimitSuccess": "✅ {{ .Email }}: HWID 上限 {{ .Count }} を保存しました。",
+      "deletedHwidSuccess": "✅ {{ .Email }}: デバイスを削除しました。"
     },
     "screens": {
       "panel": "Panel",
@@ -2763,7 +2769,9 @@
     "noValue": "—",
     "notices": {
       "repeat": "\r\n\r\n🔁 repeated {{ .Count }}× · last {{ .Time }}"
-    }
+    },
+    "noOnlineIps": "❗ オンラインの IP はありません。",
+    "noHwidDevices": "❗ 登録されたデバイスはありません。"
   },
   "discord": {
     "test": {

@@ -2645,7 +2645,9 @@
       "qrLegendJSON": "{{ .Code }}. JSON abonelik",
       "qrLegendLink": "{{ .Code }}. Uygulama bağlantısı {{ .App }}",
       "backupFailed": "Veritabanı okunamadı; yedek gönderilmedi.",
-      "privateOnly": "🤖 Bu bot yalnızca özel sohbette çalışır. Lütfen doğrudan mesajda açın."
+      "privateOnly": "🤖 Bu bot yalnızca özel sohbette çalışır. Lütfen doğrudan mesajda açın.",
+      "hwidSummary": "🔐 HWID sınırı: {{ .Limit }} · Kayıtlı cihazlar: {{ .Count }}\n\n",
+      "hwidEstimated": "tahmini"
     },
     "buttons": {
       "closeKeyboard": "❌ Klavyeyi Kapat",
@@ -2705,7 +2707,9 @@
       "qrCode": "🔳 QR code",
       "broadcast": "📢 Yayın",
       "attachInbound": "Inbound ekle ({{ .Count }})",
-      "attachDone": "✅ Tamam"
+      "attachDone": "✅ Tamam",
+      "hwidLimit": "🔐 HWID Sınırı",
+      "hwidDevices": "📱 HWID Cihazları"
     },
     "answers": {
       "broadcastStarted": "🚀 Toplu gönderim başladı.",
@@ -2732,7 +2736,9 @@
       "askToAddUserId": "Yapılandırmanız bulunamadı!\r\nLütfen yöneticinizden Telegram Chat ID'nizi yapılandırmanıza eklemesini isteyin.\r\n\r\nSizin Chat ID'niz: <code>{{ .TgUserID }}</code>",
       "chooseClient": "Gelen Bağlantı {{ .Inbound }} için bir Kullanıcı Seçin",
       "chooseInbound": "Bir Gelen Bağlantı Seçin",
-      "qrCodeForClient": "{{ .Email }} istemcisi için QR Kodu:"
+      "qrCodeForClient": "{{ .Email }} istemcisi için QR Kodu:",
+      "setHwidLimitSuccess": "✅ {{ .Email }}: HWID sınırı {{ .Count }} kaydedildi.",
+      "deletedHwidSuccess": "✅ {{ .Email }}: cihaz kaldırıldı."
     },
     "screens": {
       "panel": "Panel",
@@ -2763,7 +2769,9 @@
     "noValue": "—",
     "notices": {
       "repeat": "\r\n\r\n🔁 repeated {{ .Count }}× · last {{ .Time }}"
-    }
+    },
+    "noOnlineIps": "❗ Çevrimiçi IP yok.",
+    "noHwidDevices": "❗ Kayıtlı cihaz yok."
   },
   "discord": {
     "test": {

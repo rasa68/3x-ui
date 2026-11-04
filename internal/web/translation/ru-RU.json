@@ -2645,7 +2645,9 @@
       "qrLegendJSON": "{{ .Code }}. JSON-подписка",
       "qrLegendLink": "{{ .Code }}. Ссылка для приложения {{ .App }}",
       "backupFailed": "Не удалось прочитать базу данных; бэкап не отправлен.",
-      "privateOnly": "🤖 Бот работает только в личных сообщениях. Открой его в личке."
+      "privateOnly": "🤖 Бот работает только в личных сообщениях. Открой его в личке.",
+      "hwidSummary": "🔐 Лимит HWID: {{ .Limit }} · Зарегистрировано устройств: {{ .Count }}\n\n",
+      "hwidEstimated": "предположительно"
     },
     "buttons": {
       "closeKeyboard": "❌ Закрыть клавиатуру",
@@ -2705,7 +2707,9 @@
       "qrCode": "🔳 QR code",
       "broadcast": "📢 Рассылка",
       "attachInbound": "Привязать инбаунд ({{ .Count }})",
-      "attachDone": "✅ Готово"
+      "attachDone": "✅ Готово",
+      "hwidLimit": "🔐 Лимит HWID",
+      "hwidDevices": "📱 Устройства HWID"
     },
     "answers": {
       "broadcastStarted": "🚀 Рассылка запущена.",
@@ -2732,7 +2736,9 @@
       "askToAddUserId": "❌ Ваша конфигурация не найдена!\r\n💭 Пожалуйста, попросите администратора использовать ваш Telegram User ID в конфигурации.\r\n\r\n🆔 Ваш User ID: <code>{{ .TgUserID }}</code>",
       "chooseClient": "Выберите клиента для входящего подключения {{ .Inbound }}",
       "chooseInbound": "Выберите входящее подключение",
-      "qrCodeForClient": "QR-код для клиента {{ .Email }}:"
+      "qrCodeForClient": "QR-код для клиента {{ .Email }}:",
+      "setHwidLimitSuccess": "✅ {{ .Email }}: лимит HWID {{ .Count }} сохранён.",
+      "deletedHwidSuccess": "✅ {{ .Email }}: устройство удалено."
     },
     "screens": {
       "panel": "Panel",
@@ -2763,7 +2769,9 @@
     "noValue": "—",
     "notices": {
       "repeat": "\r\n\r\n🔁 repeated {{ .Count }}× · last {{ .Time }}"
-    }
+    },
+    "noOnlineIps": "❗ Нет онлайн-IP.",
+    "noHwidDevices": "❗ Нет зарегистрированных устройств."
   },
   "discord": {
     "test": {

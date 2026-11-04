@@ -2645,7 +2645,9 @@
       "qrLegendJSON": "{{ .Code }}. Gói đăng ký JSON",
       "qrLegendLink": "{{ .Code }}. Liên kết ứng dụng {{ .App }}",
       "backupFailed": "Không đọc được cơ sở dữ liệu; không có bản sao lưu nào được gửi.",
-      "privateOnly": "🤖 Bot này chỉ hoạt động trong trò chuyện riêng. Hãy mở nó trong tin nhắn trực tiếp."
+      "privateOnly": "🤖 Bot này chỉ hoạt động trong trò chuyện riêng. Hãy mở nó trong tin nhắn trực tiếp.",
+      "hwidSummary": "🔐 Giới hạn HWID: {{ .Limit }} · Thiết bị đã đăng ký: {{ .Count }}\n\n",
+      "hwidEstimated": "ước tính"
     },
     "buttons": {
       "closeKeyboard": "❌ Đóng Bàn Phím",
@@ -2705,7 +2707,9 @@
       "qrCode": "🔳 QR code",
       "broadcast": "📢 Phát tin",
       "attachInbound": "Đính kèm inbound ({{ .Count }})",
-      "attachDone": "✅ Xong"
+      "attachDone": "✅ Xong",
+      "hwidLimit": "🔐 Giới hạn HWID",
+      "hwidDevices": "📱 Thiết bị HWID"
     },
     "answers": {
       "broadcastStarted": "🚀 Đã bắt đầu phát tin.",
@@ -2732,7 +2736,9 @@
       "askToAddUserId": "Cấu hình của bạn không được tìm thấy!\r\nVui lòng yêu cầu Quản trị viên sử dụng ID người dùng telegram của bạn trong cấu hình của bạn.\r\n\r\nID người dùng của bạn: <code>{{ .TgUserID }}</code>",
       "chooseClient": "Chọn một Khách hàng cho Inbound {{ .Inbound }}",
       "chooseInbound": "Chọn một Inbound",
-      "qrCodeForClient": "Mã QR cho khách hàng {{ .Email }}:"
+      "qrCodeForClient": "Mã QR cho khách hàng {{ .Email }}:",
+      "setHwidLimitSuccess": "✅ {{ .Email }}: đã lưu giới hạn HWID {{ .Count }}.",
+      "deletedHwidSuccess": "✅ {{ .Email }}: đã xóa thiết bị."
     },
     "screens": {
       "panel": "Panel",
@@ -2763,7 +2769,9 @@
     "noValue": "—",
     "notices": {
       "repeat": "\r\n\r\n🔁 repeated {{ .Count }}× · last {{ .Time }}"
-    }
+    },
+    "noOnlineIps": "❗ Không có IP trực tuyến.",
+    "noHwidDevices": "❗ Chưa có thiết bị nào được đăng ký."
   },
   "discord": {
     "test": {

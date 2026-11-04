@@ -2645,7 +2645,9 @@
       "qrLegendJSON": "{{ .Code }}. اشتراك JSON",
       "qrLegendLink": "{{ .Code }}. رابط التطبيق {{ .App }}",
       "backupFailed": "فشل قراءة قاعدة البيانات؛ لم يُرسل أي نسخة احتياطية.",
-      "privateOnly": "🤖 يعمل هذا البوت في المحادثة الخاصة فقط. يرجى فتحه في رسالة مباشرة."
+      "privateOnly": "🤖 يعمل هذا البوت في المحادثة الخاصة فقط. يرجى فتحه في رسالة مباشرة.",
+      "hwidSummary": "🔐 حد HWID: {{ .Limit }} · الأجهزة المسجلة: {{ .Count }}\n\n",
+      "hwidEstimated": "تقديري"
     },
     "buttons": {
       "closeKeyboard": "❌ اقفل الكيبورد",
@@ -2705,7 +2707,9 @@
       "qrCode": "🔳 QR code",
       "broadcast": "📢 بث",
       "attachInbound": "إرفاق مدخل ({{ .Count }})",
-      "attachDone": "✅ تم"
+      "attachDone": "✅ تم",
+      "hwidLimit": "🔐 حد HWID",
+      "hwidDevices": "📱 أجهزة HWID"
     },
     "answers": {
       "broadcastStarted": "🚀 بدأ البث.",
@@ -2732,7 +2736,9 @@
       "askToAddUserId": "مافيش إعدادات ليك!\r\nاطلب من الأدمن يضيف الـ Telegram ChatID الخاص بيك في إعداداتك.\r\n\r\nالـ ChatID بتاعك: <code>{{ .TgUserID }}</code>",
       "chooseClient": "اختار عميل للإدخال {{ .Inbound }}",
       "chooseInbound": "اختار الإدخال",
-      "qrCodeForClient": "رمز QR للعميل {{ .Email }}:"
+      "qrCodeForClient": "رمز QR للعميل {{ .Email }}:",
+      "setHwidLimitSuccess": "✅ {{ .Email }}: تم حفظ حد HWID بقيمة {{ .Count }}.",
+      "deletedHwidSuccess": "✅ {{ .Email }}: تمت إزالة الجهاز."
     },
     "screens": {
       "panel": "Panel",
@@ -2763,7 +2769,9 @@
     "noValue": "—",
     "notices": {
       "repeat": "\r\n\r\n🔁 repeated {{ .Count }}× · last {{ .Time }}"
-    }
+    },
+    "noOnlineIps": "❗ لا توجد عناوين IP متصلة.",
+    "noHwidDevices": "❗ لا توجد أجهزة مسجلة."
   },
   "discord": {
     "test": {

@@ -2645,7 +2645,9 @@
       "qrLegendJSON": "{{ .Code }}. JSON 订阅",
       "qrLegendLink": "{{ .Code }}. 应用链接 {{ .App }}",
       "backupFailed": "无法读取数据库，未发送备份。",
-      "privateOnly": "🤖 此机器人仅在私聊中工作。请在私信中打开它。"
+      "privateOnly": "🤖 此机器人仅在私聊中工作。请在私信中打开它。",
+      "hwidSummary": "🔐 HWID 限制:{{ .Limit }} · 已注册设备:{{ .Count }}\n\n",
+      "hwidEstimated": "估算"
     },
     "buttons": {
       "closeKeyboard": "❌ 关闭键盘",
@@ -2705,7 +2707,9 @@
       "qrCode": "🔳 QR code",
       "broadcast": "📢 广播",
       "attachInbound": "关联入站 ({{ .Count }})",
-      "attachDone": "✅ 完成"
+      "attachDone": "✅ 完成",
+      "hwidLimit": "🔐 HWID 限制",
+      "hwidDevices": "📱 HWID 设备"
     },
     "answers": {
       "broadcastStarted": "🚀 群发已开始。",
@@ -2732,7 +2736,9 @@
       "askToAddUserId": "未找到您的配置！\r\n请向管理员询问，在您的配置中使用您的 Telegram 用户 ChatID。\r\n\r\n您的用户 ChatID：<code>{{ .TgUserID }}</code>",
       "chooseClient": "为入站 {{ .Inbound }} 选择一个客户",
       "chooseInbound": "选择一个入站",
-      "qrCodeForClient": "客户端 {{ .Email }} 的二维码："
+      "qrCodeForClient": "客户端 {{ .Email }} 的二维码：",
+      "setHwidLimitSuccess": "✅ {{ .Email }}:HWID 限制 {{ .Count }} 已保存。",
+      "deletedHwidSuccess": "✅ {{ .Email }}:设备已移除。"
     },
     "screens": {
       "panel": "Panel",
@@ -2763,7 +2769,9 @@
     "noValue": "—",
     "notices": {
       "repeat": "\r\n\r\n🔁 repeated {{ .Count }}× · last {{ .Time }}"
-    }
+    },
+    "noOnlineIps": "❗ 没有在线 IP。",
+    "noHwidDevices": "❗ 没有已注册的设备。"
   },
   "discord": {
     "test": {

@@ -2645,7 +2645,9 @@
       "qrLegendJSON": "{{ .Code }}. اشتراک JSON",
       "qrLegendLink": "{{ .Code }}. لینک برنامه {{ .App }}",
       "backupFailed": "خواندن پایگاه داده ممکن نشد؛ هیچ نسخه پشتیبانی ارسال نشد.",
-      "privateOnly": "🤖 این ربات فقط در چت خصوصی کار میکند. لطفاً آن را در پیام مستقیم باز کنید."
+      "privateOnly": "🤖 این ربات فقط در چت خصوصی کار میکند. لطفاً آن را در پیام مستقیم باز کنید.",
+      "hwidSummary": "🔐 محدودیت HWID: {{ .Limit }} · دستگاه‌های ثبت‌شده: {{ .Count }}\n\n",
+      "hwidEstimated": "تخمینی"
     },
     "buttons": {
       "closeKeyboard": "❌ بستن کیبورد",
@@ -2705,7 +2707,9 @@
       "qrCode": "🔳 QR code",
       "broadcast": "📢 همگانی",
       "attachInbound": "افزودن ورودی ({{ .Count }})",
-      "attachDone": "✅ انجام شد"
+      "attachDone": "✅ انجام شد",
+      "hwidLimit": "🔐 محدودیت HWID",
+      "hwidDevices": "📱 دستگاه‌های HWID"
     },
     "answers": {
       "broadcastStarted": "🚀 ارسال گروهی آغاز شد.",
@@ -2732,7 +2736,9 @@
       "askToAddUserId": "پیکربندی شما یافت نشد!\r\nلطفاً از مدیر خود بخواهید که شناسه کاربر تلگرام خود را در پیکربندی (های) خود استفاده کند.\r\n\r\nشناسه کاربری شما: <code>{{ .TgUserID }}</code>",
       "chooseClient": "یک مشتری برای ورودی {{ .Inbound }} انتخاب کنید",
       "chooseInbound": "یک ورودی انتخاب کنید",
-      "qrCodeForClient": "کد QR برای کاربر {{ .Email }}:"
+      "qrCodeForClient": "کد QR برای کاربر {{ .Email }}:",
+      "setHwidLimitSuccess": "✅ {{ .Email }}: محدودیت HWID برابر {{ .Count }} ذخیره شد.",
+      "deletedHwidSuccess": "✅ {{ .Email }}: دستگاه حذف شد."
     },
     "screens": {
       "panel": "Panel",
@@ -2763,7 +2769,9 @@
     "noValue": "—",
     "notices": {
       "repeat": "\r\n\r\n🔁 repeated {{ .Count }}× · last {{ .Time }}"
-    }
+    },
+    "noOnlineIps": "❗ IP آنلاینی وجود ندارد.",
+    "noHwidDevices": "❗ دستگاهی ثبت نشده است."
   },
   "discord": {
     "test": {

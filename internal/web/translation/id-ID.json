@@ -2645,7 +2645,9 @@
       "qrLegendJSON": "{{ .Code }}. Langganan JSON",
       "qrLegendLink": "{{ .Code }}. Tautan aplikasi {{ .App }}",
       "backupFailed": "Tidak dapat membaca basis data; tidak ada cadangan yang dikirim.",
-      "privateOnly": "🤖 Bot ini hanya berfungsi di obrolan pribadi. Silakan buka di pesan langsung."
+      "privateOnly": "🤖 Bot ini hanya berfungsi di obrolan pribadi. Silakan buka di pesan langsung.",
+      "hwidSummary": "🔐 Batas HWID: {{ .Limit }} · Perangkat terdaftar: {{ .Count }}\n\n",
+      "hwidEstimated": "perkiraan"
     },
     "buttons": {
       "closeKeyboard": "❌ Tutup Papan Ketik",
@@ -2705,7 +2707,9 @@
       "qrCode": "🔳 QR code",
       "broadcast": "📢 Siaran",
       "attachInbound": "Lampirkan inbound ({{ .Count }})",
-      "attachDone": "✅ Selesai"
+      "attachDone": "✅ Selesai",
+      "hwidLimit": "🔐 Batas HWID",
+      "hwidDevices": "📱 Perangkat HWID"
     },
     "answers": {
       "broadcastStarted": "🚀 Siaran dimulai.",
@@ -2732,7 +2736,9 @@
       "askToAddUserId": "Konfigurasi Anda tidak ditemukan!\r\nSilakan minta admin Anda untuk menggunakan ChatID Telegram Anda dalam konfigurasi Anda.\r\n\r\nChatID Pengguna Anda: <code>{{ .TgUserID }}</code>",
       "chooseClient": "Pilih Klien untuk Inbound {{ .Inbound }}",
       "chooseInbound": "Pilih Inbound",
-      "qrCodeForClient": "Kode QR untuk klien {{ .Email }}:"
+      "qrCodeForClient": "Kode QR untuk klien {{ .Email }}:",
+      "setHwidLimitSuccess": "✅ {{ .Email }}: batas HWID {{ .Count }} tersimpan.",
+      "deletedHwidSuccess": "✅ {{ .Email }}: perangkat dihapus."
     },
     "screens": {
       "panel": "Panel",
@@ -2763,7 +2769,9 @@
     "noValue": "—",
     "notices": {
       "repeat": "\r\n\r\n🔁 repeated {{ .Count }}× · last {{ .Time }}"
-    }
+    },
+    "noOnlineIps": "❗ Tidak ada IP online.",
+    "noHwidDevices": "❗ Tidak ada perangkat terdaftar."
   },
   "discord": {
     "test": {

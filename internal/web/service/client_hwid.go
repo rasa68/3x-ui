@@ -495,6 +495,12 @@ func (s *ClientService) DeleteClientHwid(email string, id int) error {
 	return nil
 }
 
+// SetClientHwidLimitByEmail sets the device limit of a client (0 = unlimited) and
+// trims the registered devices when the limit is lowered.
+func (s *ClientService) SetClientHwidLimitByEmail(email string, limit int) error {
+	return s.setClientLimitHwidByEmail(email, limit)
+}
+
 // Serialize the limit write and trim with SyncInbound and client deletion.
 func (s *ClientService) setClientLimitHwidByEmail(email string, limit int) error {
 	return runSerializedTx(func(tx *gorm.DB) error {

@@ -257,6 +257,13 @@ func (t *Tgbot) answerCommand(message *telego.Message, chatId int64, isAdmin boo
 		msg += t.I18nBot("tgbot.commands.help")
 		msg += t.I18nBot("tgbot.commands.pleaseChoose")
 	case "start":
+		// An admin's deep link from the online clients list opens that client's online IPs.
+		if isAdmin && len(commandArgs) > 0 {
+			if email, ok := decodeOnlinePayload(commandArgs[0]); ok {
+				t.screenClientOnlineIPs(chatId, email, screenSendNew)
+				return
+			}
+		}
 		if len(commandArgs) > 0 {
 			// A placeholder user can be neither throttled nor bound, so its claim is
 			// refused before it counts: the link works from the account's own chat.
@@ -828,6 +835,65 @@ func (t *Tgbot) answerCallback(callbackQuery *telego.CallbackQuery, isAdmin bool
 			case "ip_log":
 				t.sendCallbackAnswerTgBot(callbackQuery.ID, t.I18nBot("tgbot.answers.getIpLog", "Email=="+email))
 				t.screenClientIps(chatId, email)
+			case "onl_ips":
+				t.answerSilent(callbackQuery.ID)
+				t.screenClientOnlineIPs(chatId, email)
+			case "hwid_devices":
+				t.answerSilent(callbackQuery.ID)
+				t.screenClientHwids(chatId, email)
+			case "hwid_del":
+				if len(dataArray) == 3 {
+					if id, err := strconv.Atoi(dataArray[2]); err == nil {
+						if err := t.clientService.DeleteClientHwid(email, id); err == nil {
+							t.sendCallbackAnswerTgBot(callbackQuery.ID, t.I18nBot("tgbot.answers.deletedHwidSuccess", "Email=="+email))
+						} else {
+							t.sendCallbackAnswerTgBot(callbackQuery.ID, t.I18nBot("tgbot.answers.errorOperation"))
+						}
+						t.screenClientHwids(chatId, email)
+						return
+					}
+				}
+				t.sendCallbackAnswerTgBot(callbackQuery.ID, t.I18nBot("tgbot.answers.errorOperation"))
+			case "hwid_limit":
+				t.renderPickerOnClient(chatId, email, t.hwidLimitPicker(email))
+			case "hwid_limit_c":
+				if len(dataArray) == 3 {
+					if count, err := strconv.Atoi(dataArray[2]); err == nil {
+						if err := t.clientService.SetClientHwidLimitByEmail(email, count); err == nil {
+							t.sendCallbackAnswerTgBot(callbackQuery.ID, t.I18nBot("tgbot.answers.setHwidLimitSuccess", "Email=="+email, "Count=="+strconv.Itoa(count)))
+							t.searchClientScreen(chatId, email)
+							return
+						}
+					}
+				}
+				t.sendCallbackAnswerTgBot(callbackQuery.ID, t.I18nBot("tgbot.answers.errorOperation"))
+				t.searchClientScreen(chatId, email)
+			case "hwid_limit_in":
+				if len(dataArray) >= 3 {
+					oldInputNumber, err := strconv.Atoi(dataArray[2])
+					inputNumber := oldInputNumber
+					if err == nil {
+						if len(dataArray) == 4 {
+							num, err := strconv.Atoi(dataArray[3])
+							if err == nil {
+								inputNumber = updateNumericInput(inputNumber, num)
+							}
+							if inputNumber == oldInputNumber {
+								t.sendCallbackAnswerTgBot(callbackQuery.ID, t.I18nBot("tgbot.answers.successfulOperation"))
+								return
+							}
+							if inputNumber >= 999999 {
+								t.sendCallbackAnswerTgBot(callbackQuery.ID, t.I18nBot("tgbot.answers.errorOperation"))
+								return
+							}
+						}
+						inlineKeyboard := t.numericKeypad(numericKeypadSpec{dataBase: "hwid_limit", dataArgs: email + " ", cancelData: "client_cancel " + email, confirmLabelKey: "tgbot.buttons.confirmNumber"}, inputNumber)
+						t.renderPickerOnClient(chatId, email, inlineKeyboard.InlineKeyboard)
+						return
+					}
+				}
+				t.sendCallbackAnswerTgBot(callbackQuery.ID, t.I18nBot("tgbot.answers.errorOperation"))
+				t.searchClientScreen(chatId, email)
 			case "tgid_pick":
 				userStateMgr.set(actor, "awaiting_tg_pick")
 				t.answerSilent(callbackQuery.ID)
