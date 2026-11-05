@@ -9,6 +9,8 @@ import (
 	tu "github.com/mymmrac/telego/telegoutil"
 )
 
+const hwidDeletePrefix = "🗑 "
+
 const (
 	maxHwidDeviceRows   = 20
 	hwidDeleteBtnPerRow = 5
@@ -76,7 +78,7 @@ func (t *Tgbot) screenClientHwids(chatID int64, email string) {
 			line += " (" + html.EscapeString(t.I18nBot("tgbot.messages.hwidEstimated")) + ")"
 		}
 		body += line + "\n"
-		deleteButtons = append(deleteButtons, t.btn2("🗑 "+n, t.encodeQuery("hwid_del "+email+" "+strconv.Itoa(d.Id))))
+		deleteButtons = append(deleteButtons, t.btn2(hwidDeletePrefix+n, t.encodeQuery("hwid_del "+email+" "+strconv.Itoa(d.Id))))
 	}
 	var rows [][]telego.InlineKeyboardButton
 	for len(deleteButtons) > 0 {
