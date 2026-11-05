@@ -100,8 +100,8 @@ func (t *Tgbot) screenServer(chatID int64, delivery ...screenDelivery) {
 	t.renderScreen(chatID, t.newScreen("status", body, rows...), delivery...)
 }
 
-// screenOnlines lists who is connected right now; client names are plain text
-// (the inline browser takes over the per-client pick next).
+// screenOnlines lists who is connected right now; each client name links to the
+// card of that client's online IPs (a /start deep link back into this bot).
 func (t *Tgbot) screenOnlines(chatID int64) {
 	process := xrayProcessOrNil()
 	if process == nil {
@@ -129,7 +129,11 @@ func (t *Tgbot) screenOnlines(chatID int64) {
 				fallback = inbound.Remark
 			}
 		}
-		body += "• " + html.EscapeString(onlineButtonLabel(online, attributed[online], remarkByTag, fallback)) + "\n"
+		name := html.EscapeString(online)
+		if link := onlineClientLink(online); link != "" {
+			name = `<a href="` + html.EscapeString(link) + `">` + name + `</a>`
+		}
+		body += "• " + name + html.EscapeString(onlineLabelSuffix(attributed[online], remarkByTag, fallback)) + "\n"
 	}
 	body += t.I18nBot("tgbot.messages.refreshedOn", "Time=="+time.Now().Format("2006-01-02 15:04:05"))
 	rows := [][]telego.InlineKeyboardButton{

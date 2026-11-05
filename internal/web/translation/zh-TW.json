@@ -2645,7 +2645,9 @@
       "qrLegendJSON": "{{ .Code }}. JSON 訂閱",
       "qrLegendLink": "{{ .Code }}. 應用程式連結 {{ .App }}",
       "backupFailed": "無法讀取資料庫，未傳送備份。",
-      "privateOnly": "🤖 此機器人僅在私聊中運作。請在私訊中開啟它。"
+      "privateOnly": "🤖 此機器人僅在私聊中運作。請在私訊中開啟它。",
+      "hwidSummary": "🔐 HWID 限制:{{ .Limit }} · 已註冊裝置:{{ .Count }}\n\n",
+      "hwidEstimated": "估算"
     },
     "buttons": {
       "closeKeyboard": "❌ 關閉鍵盤",
@@ -2705,7 +2707,9 @@
       "qrCode": "🔳 QR code",
       "broadcast": "📢 廣播",
       "attachInbound": "關聯入站 ({{ .Count }})",
-      "attachDone": "✅ 完成"
+      "attachDone": "✅ 完成",
+      "hwidLimit": "🔐 HWID 限制",
+      "hwidDevices": "📱 HWID 裝置"
     },
     "answers": {
       "broadcastStarted": "🚀 群發已開始。",
@@ -2732,7 +2736,9 @@
       "askToAddUserId": "未找到您的配置！\r\n請向管理員詢問，在您的配置中使用您的 Telegram 使用者 ChatID。\r\n\r\n您的使用者 ChatID：<code>{{ .TgUserID }}</code>",
       "chooseClient": "為入站 {{ .Inbound }} 選擇一個客戶",
       "chooseInbound": "選擇一個入站",
-      "qrCodeForClient": "客戶端 {{ .Email }} 的二維碼："
+      "qrCodeForClient": "客戶端 {{ .Email }} 的二維碼：",
+      "setHwidLimitSuccess": "✅ {{ .Email }}:HWID 限制 {{ .Count }} 已儲存。",
+      "deletedHwidSuccess": "✅ {{ .Email }}:裝置已移除。"
     },
     "screens": {
       "panel": "Panel",
@@ -2763,7 +2769,9 @@
     "noValue": "—",
     "notices": {
       "repeat": "\r\n\r\n🔁 repeated {{ .Count }}× · last {{ .Time }}"
-    }
+    },
+    "noOnlineIps": "❗ 沒有線上 IP。",
+    "noHwidDevices": "❗ 沒有已註冊的裝置。"
   },
   "discord": {
     "test": {

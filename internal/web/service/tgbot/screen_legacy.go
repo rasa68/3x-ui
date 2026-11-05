@@ -137,6 +137,10 @@ func (t *Tgbot) clientRows(email string) [][]telego.InlineKeyboardButton {
 			t.btn("tgbot.buttons.ipLimit", t.encodeQuery("ip_limit "+email)),
 		),
 		tu.InlineKeyboardRow(
+			t.btn("tgbot.buttons.hwidLimit", t.encodeQuery("hwid_limit "+email)),
+			t.btn("tgbot.buttons.hwidDevices", t.encodeQuery("hwid_devices "+email)),
+		),
+		tu.InlineKeyboardRow(
 			t.btn("tgbot.buttons.setTGUser", t.encodeQuery("tg_user "+email)),
 			t.btn("tgbot.buttons.inviteLink", t.encodeQuery("client_invite_link "+email)),
 		),

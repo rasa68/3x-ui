@@ -71,10 +71,10 @@ func formatIPLog(raw string) string {
 				continue
 			}
 			if item.Timestamp > 0 {
-				lines = append(lines, fmt.Sprintf("%s (%s)", item.IP, time.Unix(item.Timestamp, 0).Format("2006-01-02 15:04:05")))
+				lines = append(lines, fmt.Sprintf("%s (%s)", ipLink(item.IP), time.Unix(item.Timestamp, 0).Format("2006-01-02 15:04:05")))
 				continue
 			}
-			lines = append(lines, item.IP)
+			lines = append(lines, ipLink(item.IP))
 		}
 		if len(lines) > 0 {
 			return strings.Join(lines, "\n")
@@ -82,9 +82,13 @@ func formatIPLog(raw string) string {
 	}
 	var plain []string
 	if json.Unmarshal([]byte(raw), &plain) == nil && len(plain) > 0 {
-		return strings.Join(plain, "\n")
+		linked := make([]string, 0, len(plain))
+		for _, ip := range plain {
+			linked = append(linked, ipLink(ip))
+		}
+		return strings.Join(linked, "\n")
 	}
-	return raw
+	return html.EscapeString(raw)
 }
 
 // screenClientTG draws a client's Telegram binding. The user picker is the one

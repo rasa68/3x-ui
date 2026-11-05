@@ -2645,7 +2645,9 @@
       "qrLegendJSON": "{{ .Code }}. Suscripción JSON",
       "qrLegendLink": "{{ .Code }}. Enlace de la app {{ .App }}",
       "backupFailed": "No se pudo leer la base de datos; no se envió ninguna copia de seguridad.",
-      "privateOnly": "🤖 Este bot solo funciona en el chat privado. Ábrelo en un mensaje directo."
+      "privateOnly": "🤖 Este bot solo funciona en el chat privado. Ábrelo en un mensaje directo.",
+      "hwidSummary": "🔐 Límite HWID: {{ .Limit }} · Dispositivos registrados: {{ .Count }}\n\n",
+      "hwidEstimated": "estimado"
     },
     "buttons": {
       "closeKeyboard": "❌ Cerrar Teclado",
@@ -2705,7 +2707,9 @@
       "qrCode": "🔳 QR code",
       "broadcast": "📢 Difusión",
       "attachInbound": "Adjuntar entrada ({{ .Count }})",
-      "attachDone": "✅ Listo"
+      "attachDone": "✅ Listo",
+      "hwidLimit": "🔐 Límite HWID",
+      "hwidDevices": "📱 Dispositivos HWID"
     },
     "answers": {
       "broadcastStarted": "🚀 Difusión iniciada.",
@@ -2732,7 +2736,9 @@
       "askToAddUserId": "¡No se encuentra su configuración!\r\nPor favor, pídale a su administrador que use su ChatID de usuario de Telegram en su(s) configuración(es).\r\n\r\nSu ChatID de usuario: <code>{{ .TgUserID }}</code>",
       "chooseClient": "Elige un Cliente para Inbound {{ .Inbound }}",
       "chooseInbound": "Elige un Inbound",
-      "qrCodeForClient": "Código QR para el cliente {{ .Email }}:"
+      "qrCodeForClient": "Código QR para el cliente {{ .Email }}:",
+      "setHwidLimitSuccess": "✅ {{ .Email }}: límite HWID {{ .Count }} guardado.",
+      "deletedHwidSuccess": "✅ {{ .Email }}: dispositivo eliminado."
     },
     "screens": {
       "panel": "Panel",
@@ -2763,7 +2769,9 @@
     "noValue": "—",
     "notices": {
       "repeat": "\r\n\r\n🔁 repeated {{ .Count }}× · last {{ .Time }}"
-    }
+    },
+    "noOnlineIps": "❗ No hay IP en línea.",
+    "noHwidDevices": "❗ No hay dispositivos registrados."
   },
   "discord": {
     "test": {

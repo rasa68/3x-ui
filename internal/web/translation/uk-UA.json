@@ -2645,7 +2645,9 @@
       "qrLegendJSON": "{{ .Code }}. JSON-підписка",
       "qrLegendLink": "{{ .Code }}. Посилання для застосунку {{ .App }}",
       "backupFailed": "Не вдалося прочитати базу даних; резервну копію не надіслано.",
-      "privateOnly": "🤖 Бот працює лише в особистих повідомленнях. Відкрий його в особистому чаті."
+      "privateOnly": "🤖 Бот працює лише в особистих повідомленнях. Відкрий його в особистому чаті.",
+      "hwidSummary": "🔐 Ліміт HWID: {{ .Limit }} · Зареєстровано пристроїв: {{ .Count }}\n\n",
+      "hwidEstimated": "орієнтовно"
     },
     "buttons": {
       "closeKeyboard": "❌ Закрити клавіатуру",
@@ -2705,7 +2707,9 @@
       "qrCode": "🔳 QR code",
       "broadcast": "📢 Розсилка",
       "attachInbound": "Прив’язати інбаунд ({{ .Count }})",
-      "attachDone": "✅ Готово"
+      "attachDone": "✅ Готово",
+      "hwidLimit": "🔐 Ліміт HWID",
+      "hwidDevices": "📱 Пристрої HWID"
     },
     "answers": {
       "broadcastStarted": "🚀 Розсилку запущено.",
@@ -2732,7 +2736,9 @@
       "askToAddUserId": "Вашу конфігурацію не знайдено!\r\nБудь ласка, попросіть свого адміністратора використовувати ваш ідентифікатор Telegram у вашій конфігурації.\r\n\r\nВаш ідентифікатор користувача: <code>{{ .TgUserID }}</code>",
       "chooseClient": "Виберіть клієнта для Вхідного {{ .Inbound }}",
       "chooseInbound": "Виберіть Вхідний",
-      "qrCodeForClient": "QR-код для клієнта {{ .Email }}:"
+      "qrCodeForClient": "QR-код для клієнта {{ .Email }}:",
+      "setHwidLimitSuccess": "✅ {{ .Email }}: ліміт HWID {{ .Count }} збережено.",
+      "deletedHwidSuccess": "✅ {{ .Email }}: пристрій видалено."
     },
     "screens": {
       "panel": "Panel",
@@ -2763,7 +2769,9 @@
     "noValue": "—",
     "notices": {
       "repeat": "\r\n\r\n🔁 repeated {{ .Count }}× · last {{ .Time }}"
-    }
+    },
+    "noOnlineIps": "❗ Немає онлайн-IP.",
+    "noHwidDevices": "❗ Немає зареєстрованих пристроїв."
   },
   "discord": {
     "test": {
